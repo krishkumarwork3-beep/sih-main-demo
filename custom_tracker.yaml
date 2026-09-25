@@ -1,0 +1,58 @@
+# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
+#
+# Custom tracker settings for the IBVAP demo — BoT-SORT with ReID.
+#
+# There are two DIFFERENT failure modes we've been fighting, and they pull
+# the settings in opposite directions:
+#
+#  1) OCCLUSION -> NEW ID: someone is briefly blocked from view (umbrella,
+#     car, another pedestrian). When they reappear, motion prediction alone
+#     doesn't line up well enough, so a brand-new id gets created for the
+#     same person.
+#
+#  2) CROSSING -> IDENTITY SWAP: two people walk close together / cross
+#     paths. The SAME id silently starts tracking the WRONG person, because
+#     the appearance match was accepted too easily.
+#
+# Fixing #1 by loosening the appearance match (lower appearance_thresh)
+# directly makes #2 worse — a looser match is exactly what lets the
+# tracker confuse two different people for each other. Between the two,
+# a wrongly-created new id is a much smaller problem than an id silently
+# pointing at the wrong person (it corrupts the fence-crossing history for
+# an innocent person), so this config is tuned to prioritize #2:
+#
+#   - appearance_thresh raised ABOVE the 0.8 default (stricter — only accept
+#     a re-match when the appearance genuinely looks like the same person)
+#   - proximity_thresh raised so appearance checks kick in for a wider range
+#     of close/ambiguous detections, not just near-perfect overlaps
+#   - match_thresh back to the stock 0.8 (was loosened to 0.85 previously,
+#     which also made weak matches easier to accept)
+#
+# track_buffer stays generous so genuine reappearances (#1) still have a
+# chance to be re-linked correctly, they just now need to actually pass a
+# real appearance check to do so instead of being nodded through.
+
+tracker_type: botsort
+track_high_thresh: 0.25
+track_low_thresh: 0.1
+new_track_thresh: 0.3    # slightly stricter than 0.25 default — fewer noisy new tracks
+track_buffer: 150        # ~5s at 30fps, keeps genuine reappearances matchable
+match_thresh: 0.8        # back to stock — was 0.85 (too lenient)
+fuse_score: True
+
+gmc_method: sparseOptFlow
+
+# ReID (appearance matching)
+proximity_thresh: 0.6    # was 0.5 — check appearance over a wider range of close boxes
+appearance_thresh: 0.85  # was 0.7 — STRICTER: reject weak appearance matches
+with_reid: True
+# IMPORTANT: "auto" is NOT a real ReID model — in current Ultralytics it just
+# passes the detector's own backbone features through unchanged, which is a
+# much weaker appearance signal than a trained ReID net and is the main
+# reason a single running person was losing/duplicating their id. Use a real
+# ReID checkpoint instead. "yolo26s-reid.onnx" is one of Ultralytics' own
+# dedicated ReID exports and downloads itself to this folder on first run
+# (via attempt_download_asset) — no manual weights hunting needed. On an
+# RTX 5060 the "s" size is effectively free; drop to yolo26n-reid.onnx only
+# if you need more headroom for a 5th+ camera.
+model: yolo26s-reid.onnx

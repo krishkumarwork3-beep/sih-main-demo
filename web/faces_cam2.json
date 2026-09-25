@@ -1,0 +1,82 @@
+[
+  {
+    "camera_id": "cam2",
+    "zone": "Zone Alpha",
+    "timestamp": "2026-09-25T06:27:33",
+    "track_id": 1,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam2",
+    "zone": "Zone Alpha",
+    "timestamp": "2026-09-25T06:27:37",
+    "track_id": 2,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam2",
+    "zone": "Zone Alpha",
+    "timestamp": "2026-09-25T06:27:37",
+    "track_id": 1,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam2",
+    "zone": "Zone Alpha",
+    "timestamp": "2026-09-25T06:27:42",
+    "track_id": 3,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam2",
+    "zone": "Zone Alpha",
+    "timestamp": "2026-09-25T06:27:47",
+    "track_id": 3,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam2",
+    "zone": "Zone Alpha",
+    "timestamp": "2026-09-25T06:27:47",
+    "track_id": 5,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam2",
+    "zone": "Zone Alpha",
+    "timestamp": "2026-09-25T06:27:51",
+    "track_id": 3,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam2",
+    "zone": "Zone Alpha",
+    "timestamp": "2026-09-25T06:27:51",
+    "track_id": 5,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam2",
+    "zone": "Zone Alpha",
+    "timestamp": "2026-09-25T06:27:57",
+    "track_id": 7,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam2",
+    "zone": "Zone Alpha",
+    "timestamp": "2026-09-25T06:28:11",
+    "track_id": 10,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  }
+]

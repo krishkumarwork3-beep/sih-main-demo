@@ -1,0 +1,98 @@
+[
+  {
+    "camera_id": "cam3",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-25T06:28:10",
+    "track_id": 2,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam3",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-25T06:28:14",
+    "track_id": 2,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam3",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-25T06:28:18",
+    "track_id": 2,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam3",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-25T06:28:22",
+    "track_id": 2,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam3",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-25T06:28:26",
+    "track_id": 2,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam3",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-25T06:28:29",
+    "track_id": 5,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam3",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-25T06:28:31",
+    "track_id": 2,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam3",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-25T06:28:33",
+    "track_id": 5,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam3",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-25T06:28:38",
+    "track_id": 5,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam3",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-25T06:28:41",
+    "track_id": 6,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam3",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-25T06:28:42",
+    "track_id": 5,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam3",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-25T06:28:45",
+    "track_id": 6,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  }
+]

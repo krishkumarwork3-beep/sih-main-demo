@@ -1,0 +1,9 @@
+ultralytics
+easyocr
+numpy
+opencv-python
+insightface
+torchreid
+gdown
+tensorboard
+onnxruntime-gpu==1.26.0

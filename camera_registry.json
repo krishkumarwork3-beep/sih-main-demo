@@ -1,0 +1,30 @@
+[
+  {
+    "camera_id": "cam1",
+    "location_name": "North Fence Line",
+    "source": "video.mp4",
+    "zone": "Zone Alpha",
+    "camera_type": "visible"
+  },
+  {
+    "camera_id": "cam2",
+    "location_name": "Access Road",
+    "source": "video2.mp4",
+    "zone": "Zone Alpha",
+    "camera_type": "visible"
+  },
+  {
+    "camera_id": "cam3",
+    "location_name": "Perimeter East",
+    "source": "video3.mp4",
+    "zone": "Zone Bravo",
+    "camera_type": "visible"
+  },
+  {
+    "camera_id": "cam4",
+    "location_name": "Gate 2",
+    "source": "video4.mp4",
+    "zone": "Zone Bravo",
+    "camera_type": "visible"
+  }
+]

@@ -1,0 +1,88 @@
+[
+  {
+    "global_id": "G0003",
+    "cls": 0,
+    "first_seen": 1790297975.9079797,
+    "last_seen": 1790297990.2527158,
+    "last_camera_id": "cam4",
+    "cameras_seen": [
+      "cam4"
+    ],
+    "authorization_status": "unauthorized",
+    "recognized_name": null,
+    "movement_history": [
+      {
+        "camera_id": "cam4",
+        "zone": "Zone Bravo",
+        "ts": 1790297975.9079797
+      }
+    ],
+    "height": 130.0,
+    "cls_label": "person"
+  },
+  {
+    "global_id": "G0001",
+    "cls": 0,
+    "first_seen": 1790297827.3617523,
+    "last_seen": 1790297925.0044916,
+    "last_camera_id": "cam3",
+    "cameras_seen": [
+      "cam1",
+      "cam2",
+      "cam3",
+      "cam4"
+    ],
+    "authorization_status": "unauthorized",
+    "recognized_name": null,
+    "movement_history": [
+      {
+        "camera_id": "cam1",
+        "zone": "Zone Alpha",
+        "ts": 1790297827.3617523
+      },
+      {
+        "camera_id": "cam2",
+        "zone": "Zone Alpha",
+        "ts": 1790297853.7916057
+      },
+      {
+        "camera_id": "cam3",
+        "zone": "Zone Bravo",
+        "ts": 1790297890.6264577
+      },
+      {
+        "camera_id": "cam4",
+        "zone": "Zone Bravo",
+        "ts": 1790297899.426273
+      },
+      {
+        "camera_id": "cam3",
+        "zone": "Zone Bravo",
+        "ts": 1790297909.1662972
+      }
+    ],
+    "height": 109.0,
+    "cls_label": "person"
+  },
+  {
+    "global_id": "G0002",
+    "cls": 0,
+    "first_seen": 1790297867.3992155,
+    "last_seen": 1790297867.3992155,
+    "last_camera_id": "cam1",
+    "cameras_seen": [
+      "cam1"
+    ],
+    "authorization_status": "unauthorized",
+    "recognized_name": null,
+    "movement_history": [
+      {
+        "camera_id": "cam1",
+        "zone": "Zone Alpha",
+        "ts": 1790297867.3992155
+      }
+    ],
+    "height": 174.0,
+    "cls_label": "person"
+  }
+]

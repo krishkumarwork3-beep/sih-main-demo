@@ -1,0 +1,38 @@
+[
+  {
+    "camera_id": "cam1",
+    "status": "stream_ended",
+    "fps": 0.0,
+    "blank_frame": false,
+    "last_update": 1790297991.3935983,
+    "location_name": "North Fence Line",
+    "zone": "Zone Alpha"
+  },
+  {
+    "camera_id": "cam2",
+    "status": "stream_ended",
+    "fps": 0.0,
+    "blank_frame": false,
+    "last_update": 1790297991.393622,
+    "location_name": "Access Road",
+    "zone": "Zone Alpha"
+  },
+  {
+    "camera_id": "cam3",
+    "status": "stream_ended",
+    "fps": 0.0,
+    "blank_frame": false,
+    "last_update": 1790297991.3969808,
+    "location_name": "Perimeter East",
+    "zone": "Zone Bravo"
+  },
+  {
+    "camera_id": "cam4",
+    "status": "stream_ended",
+    "fps": 0.0,
+    "blank_frame": false,
+    "last_update": 1790297991.4186862,
+    "location_name": "Gate 2",
+    "zone": "Zone Bravo"
+  }
+]

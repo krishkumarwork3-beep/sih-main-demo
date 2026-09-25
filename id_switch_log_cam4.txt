@@ -1,0 +1,4 @@
+[cam4][frame 43] possible ID switch: #2 (conf 0.41) vanished 0.17s ago -> new #5 (conf 0.41) appeared 1px away, class=vehicle
+[cam4][frame 217] possible ID switch: #1 (conf 0.11) vanished 1.23s ago -> new #8 (conf 0.31) appeared 45px away, class=person
+[cam4][frame 862] possible ID switch: #25 (conf 0.23) vanished 0.83s ago -> new #29 (conf 0.30) appeared 100px away, class=person
+[cam4][frame 887] possible ID switch: #24 (conf 0.13) vanished 1.53s ago -> new #33 (conf 0.37) appeared 16px away, class=person

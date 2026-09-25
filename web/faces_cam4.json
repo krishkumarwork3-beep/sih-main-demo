@@ -1,0 +1,114 @@
+[
+  {
+    "camera_id": "cam4",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-25T06:27:26",
+    "track_id": 1,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam4",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-25T06:27:30",
+    "track_id": 1,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam4",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-25T06:28:13",
+    "track_id": 1,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam4",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-25T06:28:19",
+    "track_id": 13,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam4",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-25T06:28:23",
+    "track_id": 13,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam4",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-25T06:28:32",
+    "track_id": 16,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam4",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-25T06:28:49",
+    "track_id": 14,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam4",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-25T06:28:53",
+    "track_id": 14,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam4",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-25T06:29:35",
+    "track_id": 24,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam4",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-25T06:29:37",
+    "track_id": 25,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam4",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-25T06:29:42",
+    "track_id": 29,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam4",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-25T06:29:43",
+    "track_id": 31,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam4",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-25T06:29:44",
+    "track_id": 32,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  },
+  {
+    "camera_id": "cam4",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-25T06:29:48",
+    "track_id": 33,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face"
+  }
+]

@@ -1,0 +1,4 @@
+[cam2][frame 189] possible IDENTITY SWAP: #1 (height ratio 1.41x)
+[cam2][frame 235] possible ID switch: #1 (conf 0.58) vanished 0.57s ago -> new #3 (conf 0.54) appeared 64px away, class=person
+[cam2][frame 307] possible ID switch: #3 (conf 0.39) vanished 0.57s ago -> new #7 (conf 0.52) appeared 98px away, class=person
+[cam2][frame 329] possible ID switch: #7 (conf 0.21) vanished 0.63s ago -> new #8 (conf 0.34) appeared 105px away, class=person

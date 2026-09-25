@@ -1,0 +1,61 @@
+{
+  "zone_policy": {
+    "Zone Alpha": {
+      "required_authorization_level": 3
+    },
+    "Zone Bravo": {
+      "required_authorization_level": 3
+    }
+  },
+  "allowed_time_window": {
+    "start_hour": 6,
+    "end_hour": 18
+  },
+  "fences": {
+    "cam1": [
+      [
+        134,
+        223
+      ],
+      [
+        333,
+        205
+      ]
+    ],
+    "cam2": [
+      [
+        350,
+        240
+      ],
+      [
+        470,
+        240
+      ]
+    ],
+    "cam3": [
+      [
+        280,
+        248
+      ],
+      [
+        410,
+        248
+      ]
+    ],
+    "cam4": [
+      [
+        280,
+        270
+      ],
+      [
+        440,
+        230
+      ]
+    ]
+  },
+  "reid": {
+    "adjacency_window_sec": 45,
+    "similarity_threshold": 0.5,
+    "match_margin": 0.03
+  }
+}

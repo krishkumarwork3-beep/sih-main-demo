@@ -1,0 +1,1180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IBVAP Multi-Camera Perimeter Security Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-base: #0a0d14;
+      --bg-surface: #111520;
+      --bg-surface-elevated: #161b2a;
+      --bg-surface-subtle: #0d111a;
+      --border-subtle: #1e2538;
+      --border-accent: #2e3852;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent-cyan: #38bdf8;
+      --accent-blue: #3b82f6;
+      --accent-purple: #818cf8;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-base);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Top Navigation Bar */
+    header {
+      background: rgba(17, 21, 32, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 6px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 42px;
+      flex-shrink: 0;
+      z-index: 100;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-icon {
+      width: 26px;
+      height: 26px;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 13px;
+      color: #fff;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
+    }
+    .brand-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text-main);
+    }
+    .brand-subtitle {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .system-status {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .live-clock {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      background: var(--bg-surface-subtle);
+      padding: 3px 8px;
+      border-radius: 5px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    /* Health Ribbon */
+    .health-bar {
+      display: flex;
+      gap: 8px;
+      padding: 5px 18px;
+      background: var(--bg-surface-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+      overflow-x: auto;
+      align-items: center;
+      height: 34px;
+      flex-shrink: 0;
+    }
+    .health-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+      white-space: nowrap;
+      margin-right: 4px;
+    }
+    .health-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 9px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      font-size: 11px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+    .health-pill:hover {
+      border-color: var(--border-accent);
+      background: var(--bg-surface-elevated);
+    }
+    .health-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+    .dot-healthy { background: var(--accent-emerald); box-shadow: 0 0 6px rgba(16, 185, 129, 0.4); }
+    .dot-degraded { background: var(--accent-amber); box-shadow: 0 0 6px rgba(245, 158, 11, 0.4); }
+    .dot-offline { background: var(--accent-rose); box-shadow: 0 0 6px rgba(244, 63, 94, 0.4); }
+    .dot-starting, .dot-stream_ended, .dot-stream_ended_looping {
+      background: var(--accent-cyan);
+      box-shadow: 0 0 6px rgba(56, 189, 248, 0.4);
+    }
+
+    /* Main Cockpit Container (Single View Cockpit) */
+    .dashboard-container {
+      width: 100%;
+      max-width: 100vw;
+      height: calc(100vh - 76px);
+      margin: 0;
+      padding: 8px 14px;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 12px;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    @media (max-width: 1200px) {
+      .dashboard-container {
+        height: auto;
+        overflow: visible;
+        grid-template-columns: 1fr;
+        padding: 12px;
+      }
+    }
+
+    /* Section Headers */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+    }
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .section-title::before {
+      content: "";
+      display: inline-block;
+      width: 3px;
+      height: 12px;
+      background: var(--accent-cyan);
+      border-radius: 2px;
+    }
+    .section-badge {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+
+    /* Left Column: 4-Camera Live Panels */
+    .camera-section {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* Camera Grid (2x2 fits within Left Column) */
+    .camera-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 8px;
+      flex: 1;
+      min-height: 0;
+      height: calc(100% - 28px);
+    }
+    @media (max-width: 1200px) {
+      .camera-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; }
+    }
+    @media (max-width: 600px) {
+      .camera-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Camera Card */
+    .cam-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-sm);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      min-height: 0;
+    }
+    .cam-card:hover {
+      border-color: var(--border-accent);
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Camera Video Feed */
+    .feed-container {
+      position: relative;
+      background: #000;
+      aspect-ratio: 16 / 9;
+      width: 100%;
+      overflow: hidden;
+      flex: 1;
+      min-height: 0;
+    }
+    .feed-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .feed-overlay-top {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      right: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: none;
+    }
+    .cam-tag {
+      background: rgba(10, 13, 20, 0.85);
+      backdrop-filter: blur(8px);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .zone-tag {
+      background: rgba(30, 41, 59, 0.8);
+      color: var(--accent-cyan);
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 500;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+    .feed-live-indicator {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .live-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent-rose);
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      70% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 0 4px rgba(239, 68, 68, 0); }
+      100% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+
+    /* Per-Camera Data Subsections */
+    .cam-panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      padding: 4px 6px;
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+    }
+    .panel-box {
+      background: var(--bg-surface-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      padding: 3px 5px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .panel-box-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .panel-box-title {
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-dim);
+    }
+
+    /* Fence Status Card inside Camera */
+    .fence-status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2px 4px;
+      background: var(--bg-surface-elevated);
+      border-radius: 3px;
+      font-size: 9.5px;
+    }
+    .fence-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .fence-normal { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .fence-tripped { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.5); }
+    .fence-event-meta {
+      font-size: 9px;
+      color: var(--text-muted);
+      line-height: 1.2;
+    }
+
+    /* Face Detections Mini Log */
+    .face-log-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      max-height: 30px;
+      overflow-y: auto;
+    }
+    .face-log-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-surface-elevated);
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-size: 9px;
+    }
+    .face-status-tag {
+      padding: 1px 3px;
+      border-radius: 3px;
+      font-size: 8.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .tag-enrolled { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .tag-unknown { background: rgba(245, 158, 11, 0.15); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .tag-no-face { background: rgba(100, 116, 139, 0.15); color: #94a3b8; border: 1px solid rgba(100, 116, 139, 0.25); }
+
+    /* Camera Bottom Footer (Local detections) */
+    .cam-local-detections {
+      padding: 2px 6px;
+      background: var(--bg-surface-subtle);
+      border-top: 1px solid var(--border-subtle);
+      font-size: 9.5px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    /* ========================================================
+       CROSS-CAMERA DETECTION SECTION (GLOBAL AGGREGATE ONLY)
+       ======================================================== */
+    .cross-section {
+      background: linear-gradient(180deg, #131726 0%, #0d101c 100%);
+      border: 1px solid #312e81;
+      border-radius: 10px;
+      padding: 10px 12px;
+      box-shadow: 0 6px 20px rgba(49, 46, 129, 0.15);
+      position: relative;
+      overflow-y: auto;
+      height: 100%;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .cross-section::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #6366f1, #38bdf8, #818cf8);
+    }
+    .cross-header {
+      margin-bottom: 2px;
+      flex-shrink: 0;
+    }
+    .cross-header-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #e0e7ff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .cross-header-desc {
+      font-size: 10.5px;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    /* Visual Breadcrumb / Movement Graph */
+    .breadcrumb-box {
+      background: var(--bg-surface-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 8px 10px;
+      flex-shrink: 0;
+    }
+    .breadcrumb-title {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--accent-purple);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .timeline-chain {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      padding: 2px 0;
+    }
+    .chain-node {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-accent);
+      padding: 4px 8px;
+      border-radius: 5px;
+      min-width: 85px;
+    }
+    .chain-node.active-now {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 8px rgba(56, 189, 248, 0.25);
+    }
+    .node-cam {
+      font-weight: 700;
+      font-size: 10.5px;
+      color: var(--text-main);
+    }
+    .node-loc {
+      font-size: 9px;
+      color: var(--text-muted);
+    }
+    .node-time {
+      font-size: 9px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent-cyan);
+    }
+    .chain-arrow {
+      color: var(--accent-purple);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    /* Cross Grid: Identities Table + Disambiguation Queue */
+    .cross-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    @media (max-width: 1100px) {
+      .cross-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Global Identities Table */
+    .identities-card, .disambig-card {
+      background: var(--bg-surface-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-height: 0;
+    }
+    .card-title {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .table-container {
+      overflow-x: auto;
+      max-height: 140px;
+      overflow-y: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 10.5px;
+    }
+    th {
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+      padding: 4px 6px;
+      border-bottom: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      background: var(--bg-surface-subtle);
+    }
+    td {
+      padding: 5px 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--text-main);
+    }
+
+    .gid-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      color: #a5b4fc;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 9.5px;
+      display: inline-block;
+    }
+    .auth-unauth {
+      color: #f87171;
+      background: rgba(239, 68, 68, 0.12);
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .auth-auth {
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.12);
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    /* Disambiguation Items */
+    .disambig-item {
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-left: 3px solid var(--accent-amber);
+      border-radius: 4px;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 10.5px;
+    }
+    .disambig-title {
+      font-weight: 600;
+      color: #fde68a;
+      display: flex;
+      justify-content: space-between;
+    }
+    .disambig-candidates {
+      font-size: 9.5px;
+      color: var(--text-muted);
+    }
+
+    /* System-Wide Feeds: Alerts & Plates */
+    .system-feeds-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      flex: 1;
+      min-height: 0;
+    }
+    @media (max-width: 900px) {
+      .system-feeds-grid { grid-template-columns: 1fr; }
+    }
+    .feed-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-height: 0;
+    }
+    .feed-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: 125px;
+      overflow-y: auto;
+    }
+    .alert-item {
+      background: var(--bg-surface-elevated);
+      border-radius: 4px;
+      padding: 5px 7px;
+      border-left: 3px solid var(--border-accent);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 10.5px;
+    }
+    .alert-High { border-left-color: var(--accent-rose); }
+    .alert-Medium { border-left-color: var(--accent-amber); }
+    .alert-Low { border-left-color: var(--accent-emerald); }
+    .alert-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .alert-type {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .alert-details {
+      font-size: 9.5px;
+      color: var(--text-muted);
+      display: flex;
+      gap: 8px;
+    }
+
+    .plate-item {
+      background: var(--bg-surface-elevated);
+      border-radius: 4px;
+      padding: 5px 7px;
+      border-left: 3px solid var(--accent-amber);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10.5px;
+    }
+    .plate-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      color: #fef08a;
+      letter-spacing: 0.05em;
+    }
+
+    .empty-state {
+      padding: 12px;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 11px;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">IB</div>
+      <div>
+        <div class="brand-title">IBVAP Multi-Camera Perimeter Surveillance</div>
+        <div class="brand-subtitle">AI Video Analytics · InsightFace ArcFace · OSNet Re-ID · BoT-SORT</div>
+      </div>
+    </div>
+    <div class="system-status">
+      <div id="liveClock" class="live-clock">--:--:-- UTC</div>
+    </div>
+  </header>
+
+  <!-- Health Ribbon Strip -->
+  <div class="health-bar" id="healthBar">
+    <div class="health-label">System Health:</div>
+    <div class="empty-state" style="padding: 0;">Connecting to camera processes…</div>
+  </div>
+
+  <div class="dashboard-container">
+
+    <!-- 1. PER-CAMERA VIEW: 4 Individual Camera Panels -->
+    <section class="camera-section">
+      <div class="section-header">
+        <div class="section-title">Per-Camera Live Panels (Local Camera State Only)</div>
+        <div class="section-badge">4 Registered Streams</div>
+      </div>
+      <div class="camera-grid" id="cameraGrid">
+        <div class="empty-state">Loading camera streams…</div>
+      </div>
+    </section>
+
+    <!-- 2. CROSS-CAMERA DETECTION: Dedicated Global Section -->
+    <section class="cross-section" id="crossSection">
+      <div class="cross-header">
+        <div class="cross-header-title">
+          <span>Global Cross-Camera Re-Identification & Movement Tracking</span>
+          <span class="section-badge" style="background: rgba(99, 102, 241, 0.2); border-color: rgba(99, 102, 241, 0.4); color: #c7d2fe;">OSNet 512-d Cosine</span>
+        </div>
+        <div class="cross-header-desc">
+          Strictly aggregate cross-camera data: identities linked across multiple cameras via deep body Re-ID appearance embeddings, independent of face visibility.
+        </div>
+      </div>
+
+      <!-- Visual Breadcrumb / Movement Graph -->
+      <div class="breadcrumb-box">
+        <div class="breadcrumb-title">Active Cross-Camera Transit Timeline (Multi-Camera Links)</div>
+        <div id="breadcrumbChain" class="timeline-chain">
+          <div class="empty-state" style="padding: 4px;">Analyzing cross-camera transitions…</div>
+        </div>
+      </div>
+
+      <!-- Cross Grid: Global Identities Table & Disambiguation Queue -->
+      <div class="cross-grid">
+        <!-- Global Identities Table -->
+        <div class="identities-card">
+          <div class="card-title">
+            <span>Global Identities Database</span>
+            <span id="identitiesCount" style="font-size: 11px; color: var(--text-dim);">0 tracked</span>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Global ID</th>
+                  <th>Class</th>
+                  <th>Auth Status</th>
+                  <th>Face Identity</th>
+                  <th>Cameras Visited</th>
+                  <th>Last Seen / Dwell</th>
+                </tr>
+              </thead>
+              <tbody id="identitiesTableBody">
+                <tr><td colspan="6" class="empty-state">Waiting for cross-camera appearances…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Disambiguation Queue -->
+        <div class="disambig-card">
+          <div class="card-title">
+            <span>Disambiguation Queue</span>
+            <span id="disambigBadge" style="font-size: 11px; color: var(--accent-amber);">0 pending</span>
+          </div>
+          <div id="disambigList" class="feed-list" style="max-height: 280px;">
+            <div class="empty-state">No ambiguous candidates.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- System-Wide Feeds: Alerts & Plates -->
+      <div class="system-feeds-grid">
+        <!-- All Alerts Feed -->
+        <div class="feed-card">
+          <div class="card-title">
+            <span>System-Wide Alert Feed</span>
+            <span style="font-size: 11px; color: var(--accent-rose);">Fence & Perimeter</span>
+          </div>
+          <div id="systemAlertsList" class="feed-list">
+            <div class="empty-state">No active alerts.</div>
+          </div>
+        </div>
+
+        <!-- All Recognized Plates Feed -->
+        <div class="feed-card">
+          <div class="card-title">
+            <span>Vehicle Recognition Log</span>
+            <span style="font-size: 11px; color: var(--accent-amber);">License Plates</span>
+          </div>
+          <div id="systemPlatesList" class="feed-list">
+            <div class="empty-state">No plates logged yet.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    let registeredCameras = [];
+    const locationLookup = {};
+
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('liveClock').textContent = now.toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    async function fetchJson(url, fallback) {
+      try {
+        const res = await fetch(url + '?_t=' + Date.now(), { cache: 'no-store' });
+        if (!res.ok) return fallback;
+        return await res.json();
+      } catch (err) {
+        return fallback;
+      }
+    }
+
+    async function initCameras() {
+      registeredCameras = await fetchJson('cameras.json', []);
+      if (!registeredCameras.length) return;
+
+      registeredCameras.forEach(c => {
+        locationLookup[c.camera_id] = c.location_name || c.camera_id;
+      });
+
+      const grid = document.getElementById('cameraGrid');
+      grid.innerHTML = registeredCameras.map(c => `
+        <div class="cam-card" id="card-${c.camera_id}">
+          <div class="feed-container">
+            <img class="feed-img" id="img-${c.camera_id}" src="latest_frame_${c.camera_id}.jpg" alt="${c.camera_id} stream">
+            <div class="feed-overlay-top">
+              <div class="cam-tag">
+                <span>${c.camera_id.toUpperCase()}</span>
+                <span>·</span>
+                <span>${c.location_name}</span>
+                <span class="zone-tag">${c.zone}</span>
+              </div>
+              <div class="feed-live-indicator">
+                <span class="live-dot"></span>
+                <span>LIVE</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="cam-panels">
+            <!-- Virtual Fence Panel (This Camera Only) -->
+            <div class="panel-box">
+              <div class="panel-box-header">
+                <span class="panel-box-title">Virtual Fence (Local)</span>
+                <span id="fence-badge-${c.camera_id}" class="fence-badge fence-normal">Normal</span>
+              </div>
+              <div class="fence-status-row">
+                <span style="color: var(--text-dim);">Configured:</span>
+                <span style="font-weight: 500;">${c.has_fence ? 'Yes (' + (c.fence_direction || 'both') + ')' : 'No'}</span>
+              </div>
+              <div class="fence-event-meta" id="fence-event-${c.camera_id}">
+                <div>Last event: <strong>None</strong></div>
+                <div style="color: var(--text-dim);">Monitoring perimeter line</div>
+              </div>
+            </div>
+
+            <!-- Face Detections Panel (This Camera Only) -->
+            <div class="panel-box">
+              <div class="panel-box-header">
+                <span class="panel-box-title">Faces (Local InsightFace)</span>
+                <span style="font-size: 10px; color: var(--text-dim);" id="face-count-${c.camera_id}">0 detected</span>
+              </div>
+              <div class="face-log-list" id="faces-list-${c.camera_id}">
+                <div class="empty-state" style="padding: 10px;">Scanning for faces…</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="cam-local-detections">
+            <span id="local-det-${c.camera_id}">Active Tracks: None</span>
+            <span style="font-size: 10px; color: var(--text-dim);">FPS: <span id="fps-${c.camera_id}">--</span></span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function formatTime(isoStr) {
+      if (!isoStr) return '--';
+      try {
+        const d = new Date(isoStr);
+        return d.toTimeString().slice(0, 8);
+      } catch (e) {
+        return isoStr;
+      }
+    }
+
+    function formatEpoch(ts) {
+      if (!ts) return '--';
+      const d = new Date(ts * 1000);
+      return d.toTimeString().slice(0, 8);
+    }
+
+    function getFaceBadgeClass(label) {
+      if (!label || label === 'no_usable_face') return 'tag-no-face';
+      if (label === 'unknown') return 'tag-unknown';
+      return 'tag-enrolled';
+    }
+
+    async function pollDashboard() {
+      if (!registeredCameras.length) {
+        await initCameras();
+      }
+
+      // Update camera live frames
+      registeredCameras.forEach(c => {
+        const img = document.getElementById(`img-${c.camera_id}`);
+        if (img) img.src = `latest_frame_${c.camera_id}.jpg?_t=${Date.now()}`;
+      });
+
+      // Health bar update
+      const healthData = await fetchJson('camera_health.json', []);
+      const healthBar = document.getElementById('healthBar');
+      if (healthData.length) {
+        healthBar.innerHTML = '<div class="health-label">System Health:</div>' + healthData.map(h => {
+          const fpsEl = document.getElementById(`fps-${h.camera_id}`);
+          if (fpsEl && h.fps !== undefined) fpsEl.textContent = Number(h.fps).toFixed(1);
+          return `
+            <div class="health-pill">
+              <span class="health-dot dot-${h.status}"></span>
+              <strong style="color: var(--text-main);">${h.camera_id.toUpperCase()}</strong>
+              <span style="color: var(--text-muted);">${h.location_name || ''}</span>
+              <span style="color: var(--text-dim);">· ${h.status} (${Number(h.fps || 0).toFixed(1)} fps)</span>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // 1. PER-CAMERA UPDATES (Strictly local files)
+      for (const c of registeredCameras) {
+        // Read local alerts for fence status
+        const localAlerts = await fetchJson(`alerts_${c.camera_id}.json`, []);
+        const fenceBadge = document.getElementById(`fence-badge-${c.camera_id}`);
+        const fenceEvent = document.getElementById(`fence-event-${c.camera_id}`);
+
+        if (fenceBadge && fenceEvent) {
+          const fenceCrossings = localAlerts.filter(a => a.event_type === 'virtual_fence_crossing');
+          if (fenceCrossings.length > 0) {
+            const last = fenceCrossings[fenceCrossings.length - 1];
+            fenceBadge.className = 'fence-badge fence-tripped';
+            fenceBadge.textContent = 'TRIPPED';
+            fenceEvent.innerHTML = `
+              <div>Last: <strong style="color: var(--accent-rose);">${last.direction || 'crossing'}</strong> · Track #${last.track_id}</div>
+              <div style="font-family: 'JetBrains Mono', monospace;">${formatTime(last.timestamp)} · Severity: ${last.severity}</div>
+            `;
+          } else {
+            fenceBadge.className = 'fence-badge fence-normal';
+            fenceBadge.textContent = 'Normal';
+            fenceEvent.innerHTML = `
+              <div>Last event: <strong>None</strong></div>
+              <div style="color: var(--text-dim);">Monitoring perimeter line</div>
+            `;
+          }
+        }
+
+        // Read local faces
+        const localFaces = await fetchJson(`faces_${c.camera_id}.json`, []);
+        const facesList = document.getElementById(`faces-list-${c.camera_id}`);
+        const faceCount = document.getElementById(`face-count-${c.camera_id}`);
+        if (facesList && faceCount) {
+          faceCount.textContent = `${localFaces.length} logged`;
+          if (localFaces.length === 0) {
+            facesList.innerHTML = '<div class="empty-state" style="padding: 10px;">Scanning for faces…</div>';
+          } else {
+            const recent = localFaces.slice(-5).reverse();
+            facesList.innerHTML = recent.map(f => `
+              <div class="face-log-item">
+                <span class="face-status-tag ${getFaceBadgeClass(f.face_status || f.label)}">${f.face_status || f.label}</span>
+                <span style="color: var(--text-dim);">#${f.track_id} · ${formatTime(f.timestamp)}</span>
+              </div>
+            `).join('');
+          }
+        }
+
+        // Local detections summary
+        const localDets = await fetchJson(`detections_${c.camera_id}.json`, []);
+        const detSummary = document.getElementById(`local-det-${c.camera_id}`);
+        if (detSummary) {
+          if (localDets.length === 0) {
+            detSummary.textContent = 'Active Tracks: None';
+          } else {
+            const lastDet = localDets[localDets.length - 1];
+            detSummary.innerHTML = `Latest: <strong>${lastDet.type || 'person'}</strong> (Track #${lastDet.track_id}) at ${formatTime(lastDet.timestamp)}`;
+          }
+        }
+      }
+
+      // 2. CROSS-CAMERA AGGREGATE UPDATES
+      const identities = await fetchJson('global_identities.json', []);
+      document.getElementById('identitiesCount').textContent = `${identities.length} active`;
+
+      const tbody = document.getElementById('identitiesTableBody');
+      const breadcrumbEl = document.getElementById('breadcrumbChain');
+
+      if (!identities.length) {
+        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Waiting for cross-camera appearances…</td></tr>';
+        breadcrumbEl.innerHTML = '<div class="empty-state" style="padding: 4px;">Analyzing cross-camera transitions…</div>';
+      } else {
+        // Render Global Identities Table
+        tbody.innerHTML = identities.map(g => {
+          const authClass = g.authorization_status === 'authorized' ? 'auth-auth' : 'auth-unauth';
+          const faceLabel = g.recognized_name ? g.recognized_name : 'No usable face';
+          const faceTagClass = g.recognized_name ? 'tag-enrolled' : 'tag-no-face';
+
+          const trail = (g.cameras_seen || []).map(cid => `<strong>${cid}</strong>`).join(' ➔ ');
+          const dwell = g.first_seen && g.last_seen ? Math.max(0, Math.round(g.last_seen - g.first_seen)) : 0;
+
+          return `
+            <tr>
+              <td><span class="gid-pill">${g.global_id}</span></td>
+              <td style="text-transform: capitalize;">${g.cls_label || 'Person'}</td>
+              <td><span class="${authClass}">${g.authorization_status || 'unauthorized'}</span></td>
+              <td><span class="face-status-tag ${faceTagClass}">${faceLabel}</span></td>
+              <td>${trail || '--'}</td>
+              <td>${formatEpoch(g.last_seen)} (${dwell}s dwell)</td>
+            </tr>
+          `;
+        }).join('');
+
+        // Render Cross-Camera Breadcrumb Chain (multi-camera movements)
+        const multiCamGids = identities.filter(g => g.cameras_seen && g.cameras_seen.length > 1);
+        if (multiCamGids.length === 0) {
+          breadcrumbEl.innerHTML = '<div class="empty-state" style="padding: 4px;">No multi-camera transitions linked yet.</div>';
+        } else {
+          breadcrumbEl.innerHTML = multiCamGids.map(g => {
+            const history = g.movement_history || [];
+            return `
+              <div style="display: flex; align-items: center; gap: 8px; width: 100%; margin-bottom: 6px;">
+                <span class="gid-pill">${g.global_id}</span>
+                <span style="font-size: 11px; color: var(--text-muted);">Traversal:</span>
+                ${history.map((m, idx) => `
+                  <div class="chain-node ${idx === history.length - 1 ? 'active-now' : ''}">
+                    <span class="node-cam">${m.camera_id.toUpperCase()}</span>
+                    <span class="node-loc">${locationLookup[m.camera_id] || m.zone}</span>
+                    <span class="node-time">${formatEpoch(m.ts)}</span>
+                  </div>
+                  ${idx < history.length - 1 ? '<span class="chain-arrow">➔</span>' : ''}
+                `).join('')}
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      // Disambiguation queue
+      const ambig = await fetchJson('disambiguation_queue.json', []);
+      const ambigBadge = document.getElementById('disambigBadge');
+      const ambigList = document.getElementById('disambigList');
+      ambigBadge.textContent = `${ambig.length} pending`;
+      if (!ambig.length) {
+        ambigList.innerHTML = '<div class="empty-state">No ambiguous candidates.</div>';
+      } else {
+        ambigList.innerHTML = ambig.slice().reverse().map(a => `
+          <div class="disambig-item">
+            <div class="disambig-title">
+              <span>${a.provisional_global_id} on ${a.camera_id.toUpperCase()}</span>
+              <span style="font-size: 10px; color: var(--accent-amber);">${formatEpoch(a.ts)}</span>
+            </div>
+            <div class="disambig-candidates">
+              Competing: ${(a.candidates || []).map(c => `<strong>${c.global_id}</strong> (${(c.similarity * 100).toFixed(1)}%)`).join(' vs ')}
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // System alerts list
+      const allAlerts = await fetchJson('alerts.json', []);
+      const systemAlertsList = document.getElementById('systemAlertsList');
+      if (!allAlerts.length) {
+        systemAlertsList.innerHTML = '<div class="empty-state">No active alerts.</div>';
+      } else {
+        systemAlertsList.innerHTML = allAlerts.slice(0, 15).map(a => `
+          <div class="alert-item alert-${a.severity}">
+            <div class="alert-head">
+              <span class="alert-type">${(a.event_type || '').replace(/_/g, ' ')}</span>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim);">${formatTime(a.timestamp)}</span>
+            </div>
+            <div class="alert-details">
+              <span>Cam: <strong>${(a.camera_id || '').toUpperCase()}</strong></span>
+              <span>Zone: ${a.zone || ''}</span>
+              <span>Track #${a.track_id}</span>
+              <span>Dir: ${a.direction || 'inbound'}</span>
+              <span>Risk: ${a.risk_score || '--'}${a.off_hours ? ' (off-hours)' : ''}</span>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Vehicle plates list
+      const allDetections = await fetchJson('detections.json', []);
+      const plates = allDetections.filter(d => d.type === 'plate');
+      const platesList = document.getElementById('systemPlatesList');
+      if (!plates.length) {
+        platesList.innerHTML = '<div class="empty-state">No plates logged yet.</div>';
+      } else {
+        platesList.innerHTML = plates.slice(0, 12).map(p => `
+          <div class="plate-item">
+            <div>
+              <span class="plate-val">${p.detail}</span>
+              <span style="color: var(--text-dim); font-size: 11px; margin-left: 8px;">Track #${p.track_id} · ${p.camera_id.toUpperCase()}</span>
+            </div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim);">${formatTime(p.timestamp)}</div>
+          </div>
+        `).join('');
+      }
+    }
+
+    setInterval(pollDashboard, 1000);
+    pollDashboard();
+  </script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+[
+  {
+    "camera_id": "cam1",
+    "zone": "Zone Alpha",
+    "timestamp": "2026-09-25T06:27:07",
+    "track_id": 1,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face",
+    "type": "person",
+    "detail": "person #1"
+  },
+  {
+    "camera_id": "cam1",
+    "zone": "Zone Alpha",
+    "timestamp": "2026-09-25T06:27:14",
+    "track_id": 1,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face",
+    "type": "person",
+    "detail": "person #1"
+  },
+  {
+    "camera_id": "cam1",
+    "zone": "Zone Alpha",
+    "timestamp": "2026-09-25T06:27:19",
+    "track_id": 1,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face",
+    "type": "person",
+    "detail": "person #1"
+  },
+  {
+    "camera_id": "cam1",
+    "zone": "Zone Alpha",
+    "timestamp": "2026-09-25T06:27:23",
+    "track_id": 1,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face",
+    "type": "person",
+    "detail": "person #1"
+  },
+  {
+    "camera_id": "cam1",
+    "zone": "Zone Alpha",
+    "timestamp": "2026-09-25T06:27:27",
+    "track_id": 1,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face",
+    "type": "person",
+    "detail": "person #1"
+  },
+  {
+    "camera_id": "cam1",
+    "zone": "Zone Alpha",
+    "timestamp": "2026-09-25T06:27:46",
+    "track_id": 3,
+    "face_status": "no_usable_face",
+    "label": "no_usable_face",
+    "type": "person",
+    "detail": "person #3"
+  }
+]

@@ -1,0 +1,78 @@
+[
+  {
+    "camera_id": "cam1",
+    "location_name": "North Fence Line",
+    "source": "video.mp4",
+    "zone": "Zone Alpha",
+    "camera_type": "visible",
+    "has_fence": true,
+    "fence_coords": [
+      [
+        134,
+        223
+      ],
+      [
+        333,
+        205
+      ]
+    ],
+    "fence_direction": "inbound"
+  },
+  {
+    "camera_id": "cam2",
+    "location_name": "Access Road",
+    "source": "video2.mp4",
+    "zone": "Zone Alpha",
+    "camera_type": "visible",
+    "has_fence": true,
+    "fence_coords": [
+      [
+        350,
+        240
+      ],
+      [
+        470,
+        240
+      ]
+    ],
+    "fence_direction": "both"
+  },
+  {
+    "camera_id": "cam3",
+    "location_name": "Perimeter East",
+    "source": "video3.mp4",
+    "zone": "Zone Bravo",
+    "camera_type": "visible",
+    "has_fence": true,
+    "fence_coords": [
+      [
+        280,
+        248
+      ],
+      [
+        410,
+        248
+      ]
+    ],
+    "fence_direction": "both"
+  },
+  {
+    "camera_id": "cam4",
+    "location_name": "Gate 2",
+    "source": "video4.mp4",
+    "zone": "Zone Bravo",
+    "camera_type": "visible",
+    "has_fence": true,
+    "fence_coords": [
+      [
+        280,
+        270
+      ],
+      [
+        440,
+        230
+      ]
+    ],
+    "fence_direction": "both"
+  }
+]

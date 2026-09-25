@@ -1,0 +1,12 @@
+@"
+venv/
+ANTIGRAVITY_CAMERA4_FIX.md
+ANTIGRAVITY_FIX_PROMPT.md
+__pycache__/
+models/
+known_faces/
+*.mp4
+*.onnx
+*.pt
+*.pth
+"@ | Out-File -Encoding utf8 .gitignore
