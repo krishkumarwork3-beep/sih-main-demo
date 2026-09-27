@@ -108,7 +108,7 @@ class TrackFaceState:
     def __init__(self):
         self.best_quality = 0.0
         self.best_embedding = None
-        self.label = "no_usable_face"
+        self.label = "insufficient_face_data"
         self.confirmed = False
         self.last_bbox = None  # last observed face box (full-frame xyxy)
 
@@ -137,14 +137,14 @@ class TrackFaceState:
             self.confirmed = True
             return
 
-        if self.confirmed and self.label not in ("unknown", "no_usable_face"):
+        if self.confirmed and self.label not in ("unknown", "insufficient_face_data"):
             # Already have a name — never flip it back on a worse/no match.
             return
 
         if quality >= MIN_QUALITY_TO_CONFIRM_UNKNOWN:
             self.label = "unknown"
             self.confirmed = True
-        elif self.label == "no_usable_face":
+        elif self.label == "insufficient_face_data":
             # Saw a face but not clean enough to confirm stranger vs enrolled.
             pass
 
@@ -248,7 +248,7 @@ def load_gallery(engine):
         print(f"known_faces: enrolled '{name}' from {os.path.basename(path)}.")
     if not gallery:
         print("known_faces: gallery empty — faces will be labeled unknown / "
-              "no_usable_face (pipeline still runs).")
+              "insufficient_face_data (pipeline still runs).")
     return gallery
 
 

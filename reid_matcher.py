@@ -29,6 +29,7 @@ WEB_DIR = os.path.join(BASE_DIR, "web")
 REID_EVENTS_PATH = os.path.join(WEB_DIR, "reid_events.jsonl")
 GLOBAL_IDENTITIES_PATH = os.path.join(WEB_DIR, "global_identities.json")
 DISAMBIGUATION_PATH = os.path.join(WEB_DIR, "disambiguation_queue.json")
+REID_MAPPING_PATH = os.path.join(WEB_DIR, "reid_mapping.json")
 
 POLL_INTERVAL_SEC = 1.0
 STALE_IDENTITY_SEC = 300  # drop identities from active matching after 5 min idle
@@ -86,7 +87,7 @@ def cosine(a, b):
 def is_recognized_name(face_label):
     if not face_label:
         return False
-    return face_label not in ("unknown", "no_usable_face")
+    return face_label not in ("unknown", "insufficient_face_data")
 
 
 def attach_face_label(g, face_label):
@@ -94,7 +95,7 @@ def attach_face_label(g, face_label):
         g["recognized_name"] = face_label
 
 
-def run_reid_matcher(args, config):
+def run_reid_matcher(args, config, global_reid_map=None):
     reid_cfg = config.get("reid", {})
     adjacency_window = reid_cfg.get("adjacency_window_sec", 45)
     sim_threshold = reid_cfg.get("similarity_threshold", 0.55)
@@ -103,6 +104,7 @@ def run_reid_matcher(args, config):
     open(REID_EVENTS_PATH, "a").close()
     save_json(GLOBAL_IDENTITIES_PATH, [])
     save_json(DISAMBIGUATION_PATH, [])
+    save_json(REID_MAPPING_PATH, {})
 
     global_identities = {}   # gid -> dict (feature kept as numpy)
     local_to_global = {}     # (camera_id, track_id) -> gid
@@ -174,38 +176,47 @@ def run_reid_matcher(args, config):
                 continue
             key = (ev["camera_id"], ev["track_id"])
             ts = ev["ts"]
-            face_label = ev.get("face_label") or "no_usable_face"
+            face_label = ev.get("face_label") or "insufficient_face_data"
 
             if key in local_to_global and local_to_global[key] in global_identities:
                 touch(local_to_global[key], ev["camera_id"], ev["zone"], feat, ev["height"], ts,
                       log_move=False, face_label=face_label)
+                if global_reid_map is not None:
+                    global_reid_map[f"{ev['camera_id']}_{ev['track_id']}"] = local_to_global[key]
                 continue
 
             # Candidate matching: check recently-active identities of same class
             candidates = []
+            recent_same_cls = []
             for gid, g in global_identities.items():
                 if g["cls"] != ev["cls"]:
                     continue
                 if ts - g["last_seen"] > adjacency_window:
                     continue
+                recent_same_cls.append(gid)
                 sim = cosine(g["feature"], feat)
                 candidates.append((sim, gid))
             candidates.sort(key=lambda c: c[0], reverse=True)
 
+            def assign_existing(gid):
+                touch(gid, ev["camera_id"], ev["zone"], feat, ev["height"], ts,
+                      log_move=True, face_label=face_label)
+                local_to_global[key] = gid
+                if global_reid_map is not None:
+                    global_reid_map[f"{ev['camera_id']}_{ev['track_id']}"] = gid
+
+            # Tracker ID switches / extra crops of the same person must not mint G0002
+            # when there is already exactly one live identity of this class.
+            if len(recent_same_cls) == 1:
+                assign_existing(recent_same_cls[0])
+                continue
+
             if candidates and candidates[0][0] >= sim_threshold:
                 top1_sim, top1_gid = candidates[0]
                 top2_sim = candidates[1][0] if len(candidates) > 1 else -1.0
-                if top1_sim - top2_sim >= margin:
-                    touch(top1_gid, ev["camera_id"], ev["zone"], feat, ev["height"], ts,
-                          log_move=True, face_label=face_label)
-                    local_to_global[key] = top1_gid
-                    continue
-                else:
-                    gid = new_identity(ev["camera_id"], ev["cls"], ev["zone"], feat,
-                                       ev["height"], ts, face_label)
-                    local_to_global[key] = gid
+                if top1_sim - top2_sim < margin:
                     disambiguation_queue.append({
-                        "provisional_global_id": gid,
+                        "provisional_global_id": top1_gid,
                         "camera_id": ev["camera_id"],
                         "zone": ev["zone"],
                         "ts": ts,
@@ -215,11 +226,14 @@ def run_reid_matcher(args, config):
                         ],
                     })
                     disambiguation_queue = disambiguation_queue[-20:]
-                    continue
+                assign_existing(top1_gid)
+                continue
 
             gid = new_identity(ev["camera_id"], ev["cls"], ev["zone"], feat,
                                ev["height"], ts, face_label)
             local_to_global[key] = gid
+            if global_reid_map is not None:
+                global_reid_map[f"{ev['camera_id']}_{ev['track_id']}"] = gid
 
         now = time.time()
         for gid in list(global_identities.keys()):
@@ -227,11 +241,26 @@ def run_reid_matcher(args, config):
                 del global_identities[gid]
 
         out = []
-        for g in sorted(global_identities.values(), key=lambda g: g["last_seen"], reverse=True):
+        ranked = sorted(global_identities.values(), key=lambda g: g["last_seen"], reverse=True)
+        for g in ranked:
+            cameras = g.get("cameras_seen") or []
+            dwell = float(g["last_seen"]) - float(g["first_seen"])
+            # Hide one-frame ghosts (tracker fragments) when a real trail already exists.
+            if len(cameras) <= 1 and dwell < 1.5:
+                has_real = any(
+                    (o["cls"] == g["cls"] and o["global_id"] != g["global_id"]
+                     and ((o.get("cameras_seen") or []) and (
+                         len(o.get("cameras_seen") or []) > 1
+                         or (float(o["last_seen"]) - float(o["first_seen"])) >= 1.5)))
+                    for o in ranked
+                )
+                if has_real:
+                    continue
             g2 = {k: v for k, v in g.items() if k != "feature"}
             g2["cls_label"] = "person" if g["cls"] == 0 else "vehicle"
             out.append(g2)
         save_json(GLOBAL_IDENTITIES_PATH, out)
         save_json(DISAMBIGUATION_PATH, disambiguation_queue)
+        save_json(REID_MAPPING_PATH, {f"{cid}_{tid}": gid for (cid, tid), gid in local_to_global.items()})
 
         time.sleep(POLL_INTERVAL_SEC)

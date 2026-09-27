@@ -2,81 +2,64 @@
   {
     "camera_id": "cam2",
     "zone": "Zone Alpha",
-    "timestamp": "2026-09-25T06:27:33",
+    "timestamp": "2026-09-27T05:26:55",
     "track_id": 1,
-    "face_status": "no_usable_face",
-    "label": "no_usable_face"
+    "face_status": "insufficient_face_data",
+    "label": "insufficient_face_data",
+    "global_id": null
   },
   {
     "camera_id": "cam2",
     "zone": "Zone Alpha",
-    "timestamp": "2026-09-25T06:27:37",
-    "track_id": 2,
-    "face_status": "no_usable_face",
-    "label": "no_usable_face"
-  },
-  {
-    "camera_id": "cam2",
-    "zone": "Zone Alpha",
-    "timestamp": "2026-09-25T06:27:37",
+    "timestamp": "2026-09-27T05:26:57",
     "track_id": 1,
-    "face_status": "no_usable_face",
-    "label": "no_usable_face"
+    "face_status": "insufficient_face_data",
+    "label": "insufficient_face_data",
+    "global_id": null
   },
   {
     "camera_id": "cam2",
     "zone": "Zone Alpha",
-    "timestamp": "2026-09-25T06:27:42",
-    "track_id": 3,
-    "face_status": "no_usable_face",
-    "label": "no_usable_face"
+    "timestamp": "2026-09-27T05:27:00",
+    "track_id": 1,
+    "face_status": "insufficient_face_data",
+    "label": "insufficient_face_data",
+    "global_id": null
   },
   {
     "camera_id": "cam2",
     "zone": "Zone Alpha",
-    "timestamp": "2026-09-25T06:27:47",
-    "track_id": 3,
-    "face_status": "no_usable_face",
-    "label": "no_usable_face"
+    "timestamp": "2026-09-27T05:27:03",
+    "track_id": 1,
+    "face_status": "insufficient_face_data",
+    "label": "insufficient_face_data",
+    "global_id": null
   },
   {
     "camera_id": "cam2",
     "zone": "Zone Alpha",
-    "timestamp": "2026-09-25T06:27:47",
-    "track_id": 5,
-    "face_status": "no_usable_face",
-    "label": "no_usable_face"
+    "timestamp": "2026-09-27T05:27:05",
+    "track_id": 1,
+    "face_status": "insufficient_face_data",
+    "label": "insufficient_face_data",
+    "global_id": "G0001"
   },
   {
     "camera_id": "cam2",
     "zone": "Zone Alpha",
-    "timestamp": "2026-09-25T06:27:51",
-    "track_id": 3,
-    "face_status": "no_usable_face",
-    "label": "no_usable_face"
+    "timestamp": "2026-09-27T05:27:09",
+    "track_id": 1,
+    "face_status": "insufficient_face_data",
+    "label": "insufficient_face_data",
+    "global_id": null
   },
   {
     "camera_id": "cam2",
     "zone": "Zone Alpha",
-    "timestamp": "2026-09-25T06:27:51",
-    "track_id": 5,
-    "face_status": "no_usable_face",
-    "label": "no_usable_face"
-  },
-  {
-    "camera_id": "cam2",
-    "zone": "Zone Alpha",
-    "timestamp": "2026-09-25T06:27:57",
-    "track_id": 7,
-    "face_status": "no_usable_face",
-    "label": "no_usable_face"
-  },
-  {
-    "camera_id": "cam2",
-    "zone": "Zone Alpha",
-    "timestamp": "2026-09-25T06:28:11",
-    "track_id": 10,
-    "face_status": "no_usable_face",
-    "label": "no_usable_face"
+    "timestamp": "2026-09-27T05:27:18",
+    "track_id": 1,
+    "face_status": "insufficient_face_data",
+    "label": "insufficient_face_data",
+    "global_id": null
   }
 ]

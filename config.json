@@ -1,4 +1,5 @@
 {
+  "max_duration_sec": 26.0,
   "zone_policy": {
     "Zone Alpha": {
       "required_authorization_level": 3
@@ -14,48 +15,48 @@
   "fences": {
     "cam1": [
       [
-        134,
-        223
+        143,
+        227
       ],
       [
         333,
-        205
+        206
       ]
     ],
     "cam2": [
       [
-        350,
-        240
+        367,
+        235
       ],
       [
-        470,
-        240
+        462,
+        258
       ]
     ],
     "cam3": [
       [
-        280,
-        248
+        302,
+        230
       ],
       [
-        410,
-        248
+        370,
+        227
       ]
     ],
     "cam4": [
       [
-        280,
-        270
+        140,
+        150
       ],
       [
-        440,
-        230
+        141,
+        268
       ]
     ]
   },
   "reid": {
     "adjacency_window_sec": 45,
-    "similarity_threshold": 0.50,
+    "similarity_threshold": 0.5,
     "match_margin": 0.03
   }
 }

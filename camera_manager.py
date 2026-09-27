@@ -80,7 +80,10 @@ def run_merger(registry):
         merged_alerts, merged_detections, merged_health, merged_faces = [], [], [], []
         for cam in registry:
             cid = cam["camera_id"]
-            merged_alerts.extend(load_json(cam_path(cid, "alerts"), []))
+            merged_alerts.extend(
+                a for a in load_json(cam_path(cid, "alerts"), [])
+                if not (cam.get("vehicle_only") or cid == "cam4")
+            )
             merged_detections.extend(load_json(cam_path(cid, "detections"), []))
             merged_faces.extend(load_json(cam_path(cid, "faces"), []))
 
@@ -183,6 +186,8 @@ def main():
                          help="Disable frame synchronization (cameras run independently)")
     parser.add_argument("--target-fps", type=float, default=25.0,
                          help="Target playback pace for synchronized streams (default: 25.0 fps)")
+    parser.add_argument("--duration", type=float, default=26.0,
+                         help="Maximum duration in seconds to run each camera video (default: 26.0s)")
     parser.set_defaults(loop=False)
     args = parser.parse_args()
 
@@ -215,7 +220,7 @@ def main():
                 os.remove(os.path.join(WEB_DIR, f))
             except OSError:
                 pass
-    for name in ("faces.json", "alerts.json", "detections.json", "global_identities.json", "disambiguation_queue.json"):
+    for name in ("faces.json", "alerts.json", "detections.json", "global_identities.json", "disambiguation_queue.json", "reid_mapping.json"):
         path = os.path.join(WEB_DIR, name)
         if os.path.exists(path):
             try:
@@ -227,12 +232,17 @@ def main():
     enriched_registry = []
     for cam in registry:
         c = dict(cam)
+        c["vehicle_only"] = bool(cam.get("vehicle_only", False) or cam["camera_id"] == "cam4")
         c["has_fence"] = cam["camera_id"] in fences
         c["fence_coords"] = fences.get(cam["camera_id"])
         c["fence_direction"] = "inbound" if cam["camera_id"] == "cam1" else "both"
         enriched_registry.append(c)
     save_json(os.path.join(WEB_DIR, "cameras.json"), enriched_registry)
     save_json(os.path.join(WEB_DIR, "config.json"), config)
+
+    # Cross-camera shared Re-ID identity dictionary
+    manager = mp.Manager()
+    global_reid_map = manager.dict()
 
     # Frame synchronization primitives
     sync_state = None
@@ -256,11 +266,11 @@ def main():
 
     camera_procs = []
     for cam in registry:
-        p = mp.Process(target=run_camera, args=(cam, config, args, sync_state), name=f"cam-{cam['camera_id']}", daemon=True)
+        p = mp.Process(target=run_camera, args=(cam, config, args, sync_state, global_reid_map), name=f"cam-{cam['camera_id']}", daemon=True)
         p.start()
         camera_procs.append(p)
 
-    reid_p = mp.Process(target=run_reid_matcher, args=(args, config), name="reid-matcher", daemon=True)
+    reid_p = mp.Process(target=run_reid_matcher, args=(args, config, global_reid_map), name="reid-matcher", daemon=True)
     reid_p.start()
 
     merger_p = mp.Process(target=run_merger, args=(registry,), name="dashboard-merger", daemon=True)

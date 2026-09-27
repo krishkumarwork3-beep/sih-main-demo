@@ -5,15 +5,16 @@
     "source": "video.mp4",
     "zone": "Zone Alpha",
     "camera_type": "visible",
+    "vehicle_only": false,
     "has_fence": true,
     "fence_coords": [
       [
-        134,
-        223
+        143,
+        227
       ],
       [
         333,
-        205
+        206
       ]
     ],
     "fence_direction": "inbound"
@@ -24,15 +25,16 @@
     "source": "video2.mp4",
     "zone": "Zone Alpha",
     "camera_type": "visible",
+    "vehicle_only": false,
     "has_fence": true,
     "fence_coords": [
       [
-        350,
-        240
+        367,
+        235
       ],
       [
-        470,
-        240
+        462,
+        258
       ]
     ],
     "fence_direction": "both"
@@ -43,15 +45,16 @@
     "source": "video3.mp4",
     "zone": "Zone Bravo",
     "camera_type": "visible",
+    "vehicle_only": false,
     "has_fence": true,
     "fence_coords": [
       [
-        280,
-        248
+        302,
+        230
       ],
       [
-        410,
-        248
+        370,
+        227
       ]
     ],
     "fence_direction": "both"
@@ -62,15 +65,16 @@
     "source": "video4.mp4",
     "zone": "Zone Bravo",
     "camera_type": "visible",
+    "vehicle_only": true,
     "has_fence": true,
     "fence_coords": [
       [
-        280,
-        270
+        140,
+        150
       ],
       [
-        440,
-        230
+        141,
+        268
       ]
     ],
     "fence_direction": "both"

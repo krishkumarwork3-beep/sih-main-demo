@@ -25,6 +25,7 @@
     "location_name": "Gate 2",
     "source": "video4.mp4",
     "zone": "Zone Bravo",
-    "camera_type": "visible"
+    "camera_type": "visible",
+    "vehicle_only": true
   }
 ]

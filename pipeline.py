@@ -12,7 +12,7 @@ emits):
   - Step 8  Multi-object tracking (BoT-SORT/ByteTrack, via custom_tracker.yaml)
   - Step 9  Virtual fence / line-crossing, IF this camera has a fence configured
   - Step 10 Face detection + recognition (InsightFace SCRFD + ArcFace),
-            with best-shot-per-track persistence (unknown vs no_usable_face)
+            with best-shot-per-track persistence (unknown vs insufficient_face_data)
   - Step 11 ANPR (EasyOCR on vehicle crops)
   - Step 13 Night/low-light handling, tier 1 (brightness-gated histogram eq.)
   - Step 6  Camera health heartbeat (fps, blank-frame/obstruction check)
@@ -39,6 +39,7 @@ WEB_DIR = os.path.join(BASE_DIR, "web")
 SNAPSHOT_DIR = os.path.join(WEB_DIR, "snapshots")
 TRACKER_CONFIG = os.path.join(BASE_DIR, "custom_tracker.yaml")
 REID_EVENTS_PATH = os.path.join(WEB_DIR, "reid_events.jsonl")
+REID_MAPPING_PATH = os.path.join(WEB_DIR, "reid_mapping.json")
 
 PERSON_CLASS = 0
 VEHICLE_CLASSES = {2, 3, 5, 7}  # car, motorcycle, bus, truck (COCO ids)
@@ -55,7 +56,10 @@ HEIGHT_RATIO_MAX = 1.35
 IDENTITY_LOG_COOLDOWN_SEC = 5
 ID_SWITCH_DIST_PX = 120
 ID_SWITCH_WINDOW_SEC = 3
+VEHICLE_STICKY_DIST_PX = 95
+VEHICLE_STICKY_HOLD_SEC = 90
 REID_EMIT_INTERVAL_SEC = 1.0     # how often per track we emit a Step 18 embedding
+REID_MAPPING_REFRESH_SEC = 0.5   # how often to re-read reid_mapping.json if shared map missing
 NIGHT_BRIGHTNESS_THRESHOLD = 70  # mean gray value below this -> apply histeq (Step 13 tier 1)
 HEALTH_UPDATE_EVERY_N_FRAMES = 8
 BLANK_FRAME_STD_THRESHOLD = 4.0  # near-zero variance frame == obstructed/blank lens
@@ -71,6 +75,98 @@ SAVE_JSON_RETRY_DELAY_SEC = 0.05
 
 from face_engine import TrackFaceState, associate_faces_to_box, get_face_engine
 from reid_embedder import cosine_similarity, get_reid_embedder
+
+
+def lookup_global_id(camera_id, track_id, global_reid_map, reid_mapping_cache):
+    """Resolve cross-camera Global ID for a local track (e.g. G0001).
+
+    Prefers the live shared map from reid_matcher; falls back to the on-disk
+    mapping cache. Local track numbers (#1, #3, …) stay per-camera by design —
+    the Global ID is what should match across cameras for the same person.
+    """
+    key = f"{camera_id}_{int(track_id)}"
+    if global_reid_map is not None:
+        try:
+            gid = global_reid_map.get(key)
+            if gid:
+                return str(gid)
+        except Exception:
+            pass
+    gid = reid_mapping_cache.get(key)
+    return str(gid) if gid else None
+
+
+def gid_to_track_number(gid):
+    """G0001 -> 1 so the same person shows as Track #1 on every camera."""
+    if not gid:
+        return None
+    text = str(gid)
+    if len(text) < 2 or text[0] not in ("G", "g"):
+        return None
+    try:
+        n = int(text[1:])
+    except ValueError:
+        return None
+    return n if n > 0 else None
+
+
+def fallback_person_gid(global_reid_map, reid_mapping_cache):
+    """When this local track is not mapped yet, reuse the only live person GID."""
+    values = []
+    if global_reid_map is not None:
+        try:
+            values.extend(str(v) for v in global_reid_map.values() if v)
+        except Exception:
+            pass
+    values.extend(str(v) for v in reid_mapping_cache.values() if v)
+    gids = {v for v in values if str(v).upper().startswith("G")}
+    if len(gids) == 1:
+        return next(iter(gids))
+    return None
+
+
+def display_person_track(gid, track_id, global_reid_map, reid_mapping_cache):
+    n = gid_to_track_number(gid)
+    if n is not None:
+        return n
+    n = gid_to_track_number(fallback_person_gid(global_reid_map, reid_mapping_cache))
+    if n is not None:
+        return n
+    return int(track_id)
+
+
+def refresh_reid_mapping_cache(cache, last_read):
+    """Periodically reload web/reid_mapping.json into cache. Returns new last_read."""
+    now = time.time()
+    if now - last_read < REID_MAPPING_REFRESH_SEC:
+        return last_read
+    try:
+        with open(REID_MAPPING_PATH) as f:
+            data = json.load(f)
+        if isinstance(data, dict):
+            cache.clear()
+            cache.update({str(k): str(v) for k, v in data.items()})
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        pass
+    return now
+
+
+def assign_sticky_vehicle_id(cx, cy, slots, dist_lim):
+    """Keep parked cars on stable IDs (#1, #2, …) without collapsing two cars into one."""
+    best = None
+    for slot in slots:
+        dist = ((cx - slot["x"]) ** 2 + (cy - slot["y"]) ** 2) ** 0.5
+        if dist <= dist_lim and (best is None or dist < best[0]):
+            best = (dist, slot)
+    if best is not None:
+        slot = best[1]
+        slot["x"] = 0.7 * slot["x"] + 0.3 * float(cx)
+        slot["y"] = 0.7 * slot["y"] + 0.3 * float(cy)
+        return int(slot["id"])
+    new_id = len(slots) + 1
+    slots.append({"id": new_id, "x": float(cx), "y": float(cy)})
+    return new_id
+
 
 def resolve_device(requested):
     """--device auto picks CUDA when available and REFUSES to silently fall
@@ -266,17 +362,21 @@ def write_health(camera_id, status, fps_actual, blank):
     })
 
 
-def run_camera(cam_cfg, config, args, sync_state=None):
+def run_camera(cam_cfg, config, args, sync_state=None, global_reid_map=None):
     camera_id = cam_cfg["camera_id"]
     zone = cam_cfg.get("zone", "Unassigned")
     source_path = os.path.join(BASE_DIR, cam_cfg["source"])
-    fence = config.get("fences", {}).get(camera_id)
     device = resolve_device(args.device)
     want_cuda = device != "cpu"
+
+    vehicle_only = bool(cam_cfg.get("vehicle_only", False) or (camera_id == "cam4"))
+    detect_classes = list(VEHICLE_CLASSES) if vehicle_only else list({PERSON_CLASS} | VEHICLE_CLASSES)
+    fence = config.get("fences", {}).get(camera_id)
+
     model = YOLO(args.model)
     model.to(device if device == "cpu" else f"cuda:{device}")
-    face_engine = get_face_engine(want_cuda=want_cuda)
-    reid_embedder = get_reid_embedder(device="cuda" if want_cuda else "cpu")
+    face_engine = None if vehicle_only else get_face_engine(want_cuda=want_cuda)
+    reid_embedder = None if vehicle_only else get_reid_embedder(device="cuda" if want_cuda else "cpu")
 
     os.makedirs(SNAPSHOT_DIR, exist_ok=True)
     save_json(cam_path(camera_id, "alerts"), [])
@@ -286,12 +386,18 @@ def run_camera(cam_cfg, config, args, sync_state=None):
 
     prev_side, pending_side, pending_count = {}, {}, {}
     crossed_ids = set()
-    face_last_logged, plate_last_logged = {}, {}
+    fence_alert_gids = set()
+    fence_alert_side = None
+    face_last_logged, plate_last_logged, vehicle_last_logged = {}, {}, {}
     plate_last_attempt, track_plates = {}, {}
     track_embed, track_height, swap_last_logged = {}, {}, {}
     track_face = {}
     track_frame_count = {}
     last_pos, ever_seen_ids = {}, set()
+    id_remap = {}
+    vehicle_slots = []
+    reid_mapping_cache = {}
+    reid_cache_last_read = 0.0
     reid_last_emit = {}
     cached_faces = []
     alerts, detections, faces_log = [], [], []
@@ -327,9 +433,16 @@ def run_camera(cam_cfg, config, args, sync_state=None):
     fps = cap.get(cv2.CAP_PROP_FPS) or 25
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    max_duration_sec = getattr(args, "duration", None)
+    if max_duration_sec is None:
+        max_duration_sec = config.get("max_duration_sec", 26.0)
+    max_frames = int(max_duration_sec * fps) if max_duration_sec is not None else None
+
     print(f"[{camera_id}] ========== VIDEO PROPERTIES ==========")
     print(f"[{camera_id}] Source: {source_path}")
-    print(f"[{camera_id}] Duration: {total_frames / fps:.2f} seconds")
+    print(f"[{camera_id}] Total Duration: {total_frames / fps:.2f} seconds")
+    if max_duration_sec is not None:
+        print(f"[{camera_id}] Target Run Limit: {max_duration_sec:.1f} seconds ({max_frames} frames)")
     print(f"[{camera_id}] Frames: {int(total_frames)}")
     print(f"[{camera_id}] FPS: {fps:.1f}")
     print(f"[{camera_id}] Resolution: {width}x{height}")
@@ -355,6 +468,23 @@ def run_camera(cam_cfg, config, args, sync_state=None):
                         frame_cond.wait(timeout=0.2)
                 if stop_event.is_set():
                     break
+
+            if max_frames is not None and frame_no >= max_frames:
+                if args.loop and source_path not in ("0", 0):
+                    print(f"[{camera_id}] reached limit of {max_duration_sec:.1f}s, looping back to start...")
+                    cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+                    frame_no = 0
+                else:
+                    stream_ended_normally = True
+                    write_health(camera_id, "stream_ended", 0.0, False)
+                    print(f"[{camera_id}] reached limit of {max_duration_sec:.1f}s ({max_frames} frames) — end of stream.")
+                    if sync_state is not None:
+                        report_queue.put(("ended", camera_id, frame_no))
+                    break
+
+            if global_reid_map is None:
+                reid_cache_last_read = refresh_reid_mapping_cache(
+                    reid_mapping_cache, reid_cache_last_read)
 
             ok, frame = cap.read()
             if not ok:
@@ -382,7 +512,7 @@ def run_camera(cam_cfg, config, args, sync_state=None):
 
             results = model.track(
                 frame, persist=True, tracker=TRACKER_CONFIG,
-                classes=list({PERSON_CLASS} | VEHICLE_CLASSES),
+                classes=detect_classes,
                 imgsz=args.imgsz, device=device, verbose=False,
             )[0]
 
@@ -401,19 +531,19 @@ def run_camera(cam_cfg, config, args, sync_state=None):
                 fps_window_start, fps_window_frames = now, 0
 
             has_persons = False
-            if results.boxes.id is not None and results.boxes.cls is not None:
+            if not vehicle_only and results.boxes.id is not None and results.boxes.cls is not None:
                 clss_check = results.boxes.cls.cpu().numpy().astype(int)
                 has_persons = any(c == PERSON_CLASS for c in clss_check)
 
             frame_faces = []
-            if face_engine is not None and has_persons:
+            if not vehicle_only and face_engine is not None and has_persons:
                 if frame_no % 3 == 0 or not cached_faces:
                     try:
                         cached_faces = face_engine.detect(frame)
                     except Exception:
                         cached_faces = []
                 frame_faces = cached_faces
-            elif not has_persons:
+            else:
                 cached_faces = []
 
             if results.boxes.id is not None:
@@ -424,32 +554,72 @@ def run_camera(cam_cfg, config, args, sync_state=None):
                 current_ids = set(ids.tolist())
 
                 for box, track_id, cls, conf in zip(boxes, ids, clss, confs):
+                    # Strict guard: skip any person detections on vehicle-only cameras
+                    if vehicle_only and cls == PERSON_CLASS:
+                        continue
+
                     x1, y1, x2, y2 = box
                     cx, cy = (x1 + x2) // 2, (y1 + y2) // 2
                     label = "person" if cls == PERSON_CLASS else "vehicle"
+                    raw_id = int(track_id)
 
-                    if track_id not in ever_seen_ids:
-                        ever_seen_ids.add(track_id)
+                    # Parked vehicles (cam4) keep a sticky ID — BoT-SORT otherwise
+                    # mints a new number every time the headlights/box flicker.
+                    if cls in VEHICLE_CLASSES:
+                        hold = VEHICLE_STICKY_HOLD_SEC if vehicle_only else ID_SWITCH_WINDOW_SEC
+                        dist_lim = VEHICLE_STICKY_DIST_PX if vehicle_only else ID_SWITCH_DIST_PX
+                        if vehicle_only:
+                            track_id = assign_sticky_vehicle_id(cx, cy, vehicle_slots, dist_lim)
+                            id_remap[raw_id] = track_id
+                        elif raw_id in id_remap:
+                            track_id = id_remap[raw_id]
+                        else:
+                            best_old = None
+                            for old_id, (ox, oy, ocls, oframe, _oconf) in last_pos.items():
+                                if ocls not in VEHICLE_CLASSES:
+                                    continue
+                                age_sec = (frame_no - oframe) / max(fps, 1)
+                                if age_sec > hold:
+                                    continue
+                                dist = ((cx - ox) ** 2 + (cy - oy) ** 2) ** 0.5
+                                if dist <= dist_lim and (best_old is None or dist < best_old[1]):
+                                    best_old = (old_id, dist)
+                            track_id = best_old[0] if best_old is not None else raw_id
+                            id_remap[raw_id] = track_id
+
+                    if raw_id not in ever_seen_ids:
+                        ever_seen_ids.add(raw_id)
                         best_match = None
                         for old_id, (ox, oy, ocls, oframe, oconf) in last_pos.items():
-                            if old_id in current_ids or old_id == track_id:
+                            if old_id in current_ids or old_id == raw_id:
                                 continue
                             age_sec = (frame_no - oframe) / max(fps, 1)
-                            if age_sec > ID_SWITCH_WINDOW_SEC or ocls != cls:
+                            window = VEHICLE_STICKY_HOLD_SEC if cls in VEHICLE_CLASSES else ID_SWITCH_WINDOW_SEC
+                            if age_sec > window or ocls != cls:
                                 continue
                             dist = ((cx - ox) ** 2 + (cy - oy) ** 2) ** 0.5
-                            if dist <= ID_SWITCH_DIST_PX and (best_match is None or dist < best_match[1]):
+                            dist_lim = VEHICLE_STICKY_DIST_PX if cls in VEHICLE_CLASSES else ID_SWITCH_DIST_PX
+                            if dist <= dist_lim and (best_match is None or dist < best_match[1]):
                                 best_match = (old_id, dist, age_sec, oconf)
                         if best_match:
                             old_id, dist, age_sec, oconf = best_match
                             msg = (f"[{camera_id}][frame {frame_no}] possible ID switch: #{old_id} "
-                                   f"(conf {oconf:.2f}) vanished {age_sec:.2f}s ago -> new #{track_id} "
-                                   f"(conf {conf:.2f}) appeared {dist:.0f}px away, class={label}")
+                                   f"(conf {oconf:.2f}) vanished {age_sec:.2f}s ago -> new #{raw_id} "
+                                   f"(conf {conf:.2f}) appeared {dist:.0f}px away, class={label}"
+                                   f" (kept #{track_id})")
                             print(msg)
                             with open(id_switch_log, "a") as f:
                                 f.write(msg + "\n")
 
-                    if cls == PERSON_CLASS:
+                    gid = None
+                    ui_tid = int(track_id)
+                    if cls == PERSON_CLASS and not vehicle_only:
+                        gid = lookup_global_id(
+                            camera_id, track_id, global_reid_map, reid_mapping_cache)
+                        ui_tid = display_person_track(
+                            gid, track_id, global_reid_map, reid_mapping_cache)
+
+                    if cls == PERSON_CLASS and not vehicle_only:
                         track_frame_count[track_id] = track_frame_count.get(track_id, 0) + 1
                         t_frames = track_frame_count[track_id]
 
@@ -471,12 +641,15 @@ def run_camera(cam_cfg, config, args, sync_state=None):
                         if t_frames >= 2 and (track_id not in face_last_logged or now - face_last_logged[track_id] > LOG_COOLDOWN_SEC):
                             rec = {"camera_id": camera_id, "zone": zone,
                                    "timestamp": datetime.now().isoformat(timespec="seconds"),
-                                   "track_id": int(track_id),
+                                   "track_id": int(ui_tid),
                                    "face_status": state.label,
-                                   "label": state.label}
+                                   "label": state.label,
+                                   "global_id": gid}
                             faces_log.append(rec)
                             save_json(cam_path(camera_id, "faces"), faces_log, tail=40)
-                            detections.append({**rec, "type": "person", "detail": f"person #{track_id}"})
+                            detail = f"person #{ui_tid}"
+                            detections.append({**rec, "type": "person", "detail": detail,
+                                               "global_id": gid})
                             save_json(cam_path(camera_id, "detections"), detections, tail=30)
                             face_last_logged[track_id] = now
 
@@ -497,8 +670,6 @@ def run_camera(cam_cfg, config, args, sync_state=None):
                             height_changed = not (HEIGHT_RATIO_MIN <= height_ratio <= HEIGHT_RATIO_MAX)
 
                         if appearance_changed:
-                            was_crossed = track_id in crossed_ids
-                            crossed_ids.discard(track_id)
                             for d in (prev_side, pending_side, pending_count, plate_last_logged):
                                 d.pop(track_id, None)
 
@@ -526,46 +697,84 @@ def run_camera(cam_cfg, config, args, sync_state=None):
                                     reid_last_emit[track_id] = now
                         track_height[track_id] = height_px
 
-                        if fence:
-                            a, b = fence[0], fence[1]
-                            sign = confirmed_side((cx, cy), a, b)
-                            stable = prev_side.get(track_id)
-                            if sign == 0:
-                                pass
-                            elif stable is None:
-                                prev_side[track_id] = sign
-                            elif sign == stable:
-                                pending_count[track_id] = 0
+                    sign = 0
+                    if fence:
+                        a, b = fence[0], fence[1]
+                        sign = confirmed_side((cx, cy), a, b)
+                        stable = prev_side.get(track_id)
+                        if sign == 0:
+                            pass
+                        elif stable is None:
+                            prev_side[track_id] = sign
+                        elif sign == stable:
+                            pending_count[track_id] = 0
+                        else:
+                            if pending_side.get(track_id) == sign:
+                                pending_count[track_id] = pending_count.get(track_id, 0) + 1
                             else:
-                                if pending_side.get(track_id) == sign:
-                                    pending_count[track_id] = pending_count.get(track_id, 0) + 1
-                                else:
-                                    pending_side[track_id] = sign
-                                    pending_count[track_id] = 1
-                                if pending_count[track_id] >= CROSS_CONFIRM_FRAMES:
-                                    direction = "inbound" if sign > 0 else "outbound"
-                                    score, severity = compute_risk(off_hours)
-                                    snap_name = f"{camera_id}_track{track_id}_{int(time.time())}.jpg"
-                                    cv2.imwrite(os.path.join(SNAPSHOT_DIR, snap_name), frame)
-                                    alert = {"camera_id": camera_id, "zone": zone,
-                                             "timestamp": datetime.now().isoformat(timespec="seconds"),
-                                             "track_id": int(track_id), "event_type": "virtual_fence_crossing",
-                                             "direction": direction, "off_hours": off_hours,
-                                             "risk_score": score, "severity": severity,
-                                             "snapshot": f"snapshots/{snap_name}"}
-                                    alerts.append(alert)
-                                    save_json(cam_path(camera_id, "alerts"), alerts, tail=50)
-                                    print(f"[{camera_id}] ALERT: {alert}")
-                                    crossed_ids.add(track_id)
-                                    prev_side[track_id] = sign
-                                    pending_count[track_id] = 0
+                                pending_side[track_id] = sign
+                                pending_count[track_id] = 1
+                            if pending_count[track_id] >= CROSS_CONFIRM_FRAMES:
+                                direction = "inbound" if sign > 0 else "outbound"
+                                score, severity = compute_risk(off_hours)
+                                snap_name = f"{camera_id}_track{track_id}_{int(time.time())}.jpg"
+                                cv2.imwrite(os.path.join(SNAPSHOT_DIR, snap_name), frame)
+                                alert = {"camera_id": camera_id, "zone": zone,
+                                         "timestamp": datetime.now().isoformat(timespec="seconds"),
+                                         "track_id": int(ui_tid), "event_type": "virtual_fence_crossing",
+                                         "direction": direction, "off_hours": off_hours,
+                                         "risk_score": score, "severity": severity,
+                                         "snapshot": f"snapshots/{snap_name}",
+                                         "global_id": gid}
+                                alerts.append(alert)
+                                save_json(cam_path(camera_id, "alerts"), alerts, tail=50)
+                                print(f"[{camera_id}] ALERT: {alert}")
+                                crossed_ids.add(track_id)
+                                if gid:
+                                    fence_alert_gids.add(gid)
+                                if cls == PERSON_CLASS and not vehicle_only:
+                                    fence_alert_side = sign
+                                prev_side[track_id] = sign
+                                pending_count[track_id] = 0
 
-                    box_color = BOX_COLOR_ALERT if track_id in crossed_ids else BOX_COLOR_NORMAL
+                    if gid and (
+                        gid in fence_alert_gids
+                        or track_id in crossed_ids
+                        or (fence_alert_side is not None and sign == fence_alert_side)
+                    ):
+                        fence_alert_gids.add(gid)
+                        crossed_ids.add(track_id)
+
+                    on_alert_side = (
+                        cls == PERSON_CLASS and not vehicle_only
+                        and fence_alert_side is not None
+                        and sign == fence_alert_side
+                    )
+                    gid_alert = gid is not None and gid in fence_alert_gids
+                    box_color = BOX_COLOR_ALERT if (
+                        track_id in crossed_ids or gid_alert or on_alert_side
+                    ) else BOX_COLOR_NORMAL
                     cv2.rectangle(annotated, (x1, y1), (x2, y2), box_color, 2)
-                    draw_outlined_text(annotated, f"{label} #{track_id}", (x1, max(y1 - 8, 12)))
+                    box_label = f"{label} #{ui_tid}"
+                    draw_outlined_text(annotated, box_label, (x1, max(y1 - 8, 12)))
 
                     if cls in VEHICLE_CLASSES:
+                        track_frame_count[track_id] = track_frame_count.get(track_id, 0) + 1
+                        t_frames = track_frame_count[track_id]
                         now = time.time()
+
+                        if t_frames >= 2 and (track_id not in vehicle_last_logged or (now - vehicle_last_logged[track_id] > LOG_COOLDOWN_SEC)):
+                            detections.append({
+                                "camera_id": camera_id,
+                                "zone": zone,
+                                "timestamp": datetime.now().isoformat(timespec="seconds"),
+                                "track_id": int(track_id),
+                                "type": "vehicle",
+                                "detail": f"vehicle #{track_id}"
+                            })
+                            save_json(cam_path(camera_id, "detections"), detections, tail=30)
+                            vehicle_last_logged[track_id] = now
+
                         if track_id not in plate_last_attempt or (now - plate_last_attempt[track_id] > 2.0):
                             plate_last_attempt[track_id] = now
                             detected_plate = read_plate(frame, (x1, y1, x2, y2))
@@ -585,7 +794,12 @@ def run_camera(cam_cfg, config, args, sync_state=None):
 
             if fence:
                 cv2.line(annotated, tuple(fence[0]), tuple(fence[1]), (0, 0, 255), 2)
-            draw_outlined_text(annotated, f"{camera_id} · {cam_cfg['location_name']}" + (" · NIGHT MODE" if night_mode else ""),
+            title = f"{camera_id} · {cam_cfg['location_name']}"
+            if vehicle_only:
+                title += " [VEHICLE ONLY]"
+            if night_mode:
+                title += " · NIGHT MODE"
+            draw_outlined_text(annotated, title,
                                 (16, 34), scale=0.8, text_color=(255, 255, 0) if night_mode else (255, 255, 255))
 
             cv2.imwrite(frame_path(camera_id), annotated)

@@ -28,7 +28,7 @@ From `web/health_cam4.json`:
 From `web/detections_cam4.json` - shows 9 face detection entries with multiple track IDs:
 - Track IDs detected: 1, 13, 14, 24, 25, 33
 - Timestamps: Between 04:10:56 and 04:13:13
-- All labeled as "no_usable_face" (expected for a parked vehicle video)
+- All labeled as "insufficient_face_data" (expected for a parked vehicle video)
 
 **This proves cam4 DID run successfully at some point and detected objects (wrongly classified as persons with faces, but that's a separate issue).**
 
@@ -79,7 +79,7 @@ If cam4's duration is much shorter, that's the issue.
 
 ### 2. **False Person Detections in cam4**
 
-**Observation**: cam4's detections log shows multiple track IDs (1, 13, 14, 24, 25, 33) with "no_usable_face" labels.
+**Observation**: cam4's detections log shows multiple track IDs (1, 13, 14, 24, 25, 33) with "insufficient_face_data" labels.
 
 **Expected behavior**: video4.mp4 is supposed to be a **parked vehicle at night** with **NO person** in it.
 

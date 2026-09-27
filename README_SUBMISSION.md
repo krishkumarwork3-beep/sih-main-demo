@@ -93,11 +93,11 @@ edge case:
 - **Confidence-aware matching:** a large frontal crop can match at a
   slightly lower cosine; a small/angled crop needs a higher score.
 - **Two "no name" states:** `unknown` = a clean face was captured and is
-  not in the gallery; `no_usable_face` = never got a crop good enough to
+  not in the gallery; `insufficient_face_data` = never got a crop good enough to
   attempt a confident match (hood up, range, angle).
 
 The four provided clips have **no visible face by design** (hooded IR
-subject on cam1–3; parked vehicle on cam4). `no_usable_face` / `unknown`
+subject on cam1–3; parked vehicle on cam4). `insufficient_face_data` / `unknown`
 on them is the correct output, not a gap in the demo. Positive name
 matches require enrollment photos with a visible face.
 
