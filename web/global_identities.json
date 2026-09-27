@@ -2,8 +2,8 @@
   {
     "global_id": "G0001",
     "cls": 0,
-    "first_seen": 1790467000.129885,
-    "last_seen": 1790467058.5229797,
+    "first_seen": 1790484192.6490111,
+    "last_seen": 1790484246.2347405,
     "last_camera_id": "cam3",
     "cameras_seen": [
       "cam1",
@@ -16,27 +16,27 @@
       {
         "camera_id": "cam1",
         "zone": "Zone Alpha",
-        "ts": 1790467000.129885
+        "ts": 1790484192.6490111
       },
       {
         "camera_id": "cam2",
         "zone": "Zone Alpha",
-        "ts": 1790467015.3601203
+        "ts": 1790484206.1970754
       },
       {
         "camera_id": "cam1",
         "zone": "Zone Alpha",
-        "ts": 1790467023.5125284
+        "ts": 1790484213.7032437
       },
       {
         "camera_id": "cam2",
         "zone": "Zone Alpha",
-        "ts": 1790467023.8321326
+        "ts": 1790484213.9948373
       },
       {
         "camera_id": "cam3",
         "zone": "Zone Bravo",
-        "ts": 1790467037.5807204
+        "ts": 1790484226.419175
       }
     ],
     "height": 109.0,

@@ -82,7 +82,7 @@ def run_merger(registry):
             cid = cam["camera_id"]
             merged_alerts.extend(
                 a for a in load_json(cam_path(cid, "alerts"), [])
-                if not (cam.get("vehicle_only") or cid == "cam4")
+                if not cam.get("vehicle_only")
             )
             merged_detections.extend(load_json(cam_path(cid, "detections"), []))
             merged_faces.extend(load_json(cam_path(cid, "faces"), []))
@@ -232,7 +232,7 @@ def main():
     enriched_registry = []
     for cam in registry:
         c = dict(cam)
-        c["vehicle_only"] = bool(cam.get("vehicle_only", False) or cam["camera_id"] == "cam4")
+        c["vehicle_only"] = bool(cam.get("vehicle_only", False))
         c["has_fence"] = cam["camera_id"] in fences
         c["fence_coords"] = fences.get(cam["camera_id"])
         c["fence_direction"] = "inbound" if cam["camera_id"] == "cam1" else "both"

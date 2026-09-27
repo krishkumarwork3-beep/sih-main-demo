@@ -369,7 +369,7 @@ def run_camera(cam_cfg, config, args, sync_state=None, global_reid_map=None):
     device = resolve_device(args.device)
     want_cuda = device != "cpu"
 
-    vehicle_only = bool(cam_cfg.get("vehicle_only", False) or (camera_id == "cam4"))
+    vehicle_only = bool(cam_cfg.get("vehicle_only", False))
     detect_classes = list(VEHICLE_CLASSES) if vehicle_only else list({PERSON_CLASS} | VEHICLE_CLASSES)
     fence = config.get("fences", {}).get(camera_id)
 
@@ -795,8 +795,6 @@ def run_camera(cam_cfg, config, args, sync_state=None, global_reid_map=None):
             if fence:
                 cv2.line(annotated, tuple(fence[0]), tuple(fence[1]), (0, 0, 255), 2)
             title = f"{camera_id} · {cam_cfg['location_name']}"
-            if vehicle_only:
-                title += " [VEHICLE ONLY]"
             if night_mode:
                 title += " · NIGHT MODE"
             draw_outlined_text(annotated, title,

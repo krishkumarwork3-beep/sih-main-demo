@@ -2,15 +2,7 @@
   {
     "camera_id": "cam4",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:58",
-    "track_id": 1,
-    "type": "vehicle",
-    "detail": "vehicle #1"
-  },
-  {
-    "camera_id": "cam4",
-    "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:58",
+    "timestamp": "2026-09-27T10:14:23",
     "track_id": 2,
     "type": "vehicle",
     "detail": "vehicle #2"
@@ -18,7 +10,7 @@
   {
     "camera_id": "cam4",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:53",
+    "timestamp": "2026-09-27T10:14:22",
     "track_id": 1,
     "type": "vehicle",
     "detail": "vehicle #1"
@@ -26,7 +18,7 @@
   {
     "camera_id": "cam4",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:53",
+    "timestamp": "2026-09-27T10:14:18",
     "track_id": 2,
     "type": "vehicle",
     "detail": "vehicle #2"
@@ -34,7 +26,7 @@
   {
     "camera_id": "cam4",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:49",
+    "timestamp": "2026-09-27T10:14:16",
     "track_id": 1,
     "type": "vehicle",
     "detail": "vehicle #1"
@@ -42,7 +34,7 @@
   {
     "camera_id": "cam4",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:45",
+    "timestamp": "2026-09-27T10:14:12",
     "track_id": 1,
     "type": "vehicle",
     "detail": "vehicle #1"
@@ -50,7 +42,7 @@
   {
     "camera_id": "cam4",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:41",
+    "timestamp": "2026-09-27T10:14:08",
     "track_id": 1,
     "type": "vehicle",
     "detail": "vehicle #1"
@@ -58,18 +50,7 @@
   {
     "camera_id": "cam3",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:37",
-    "track_id": 1,
-    "face_status": "insufficient_face_data",
-    "label": "insufficient_face_data",
-    "global_id": "G0001",
-    "type": "person",
-    "detail": "person #1"
-  },
-  {
-    "camera_id": "cam3",
-    "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:36",
+    "timestamp": "2026-09-27T10:14:04",
     "track_id": 1,
     "face_status": "insufficient_face_data",
     "label": "insufficient_face_data",
@@ -78,25 +59,9 @@
     "detail": "person #1"
   },
   {
-    "camera_id": "cam4",
-    "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:36",
-    "track_id": 2,
-    "type": "vehicle",
-    "detail": "vehicle #2"
-  },
-  {
-    "camera_id": "cam4",
-    "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:34",
-    "track_id": 1,
-    "type": "vehicle",
-    "detail": "vehicle #1"
-  },
-  {
     "camera_id": "cam3",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:32",
+    "timestamp": "2026-09-27T10:14:04",
     "track_id": 1,
     "face_status": "insufficient_face_data",
     "label": "insufficient_face_data",
@@ -107,7 +72,7 @@
   {
     "camera_id": "cam4",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:32",
+    "timestamp": "2026-09-27T10:14:04",
     "track_id": 2,
     "type": "vehicle",
     "detail": "vehicle #2"
@@ -115,7 +80,7 @@
   {
     "camera_id": "cam4",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:30",
+    "timestamp": "2026-09-27T10:14:01",
     "track_id": 1,
     "type": "vehicle",
     "detail": "vehicle #1"
@@ -123,7 +88,7 @@
   {
     "camera_id": "cam3",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:29",
+    "timestamp": "2026-09-27T10:14:00",
     "track_id": 1,
     "face_status": "insufficient_face_data",
     "label": "insufficient_face_data",
@@ -132,9 +97,36 @@
     "detail": "person #1"
   },
   {
+    "camera_id": "cam4",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-27T10:13:59",
+    "track_id": 2,
+    "type": "vehicle",
+    "detail": "vehicle #2"
+  },
+  {
     "camera_id": "cam3",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:28",
+    "timestamp": "2026-09-27T10:13:58",
+    "track_id": 1,
+    "face_status": "insufficient_face_data",
+    "label": "insufficient_face_data",
+    "global_id": "G0001",
+    "type": "person",
+    "detail": "person #1"
+  },
+  {
+    "camera_id": "cam4",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-27T10:13:57",
+    "track_id": 1,
+    "type": "vehicle",
+    "detail": "vehicle #1"
+  },
+  {
+    "camera_id": "cam3",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-27T10:13:56",
     "track_id": 1,
     "face_status": "insufficient_face_data",
     "label": "insufficient_face_data",
@@ -143,25 +135,9 @@
     "detail": "person #1"
   },
   {
-    "camera_id": "cam4",
-    "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:28",
-    "track_id": 2,
-    "type": "vehicle",
-    "detail": "vehicle #2"
-  },
-  {
-    "camera_id": "cam4",
-    "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:26",
-    "track_id": 1,
-    "type": "vehicle",
-    "detail": "vehicle #1"
-  },
-  {
     "camera_id": "cam3",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:25",
+    "timestamp": "2026-09-27T10:13:54",
     "track_id": 1,
     "face_status": "insufficient_face_data",
     "label": "insufficient_face_data",
@@ -172,23 +148,15 @@
   {
     "camera_id": "cam4",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:24",
+    "timestamp": "2026-09-27T10:13:52",
     "track_id": 2,
     "type": "vehicle",
     "detail": "vehicle #2"
   },
   {
-    "camera_id": "cam4",
-    "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:22",
-    "track_id": 1,
-    "type": "vehicle",
-    "detail": "vehicle #1"
-  },
-  {
     "camera_id": "cam3",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:21",
+    "timestamp": "2026-09-27T10:13:50",
     "track_id": 1,
     "face_status": "insufficient_face_data",
     "label": "insufficient_face_data",
@@ -199,61 +167,7 @@
   {
     "camera_id": "cam4",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:19",
-    "track_id": 2,
-    "type": "vehicle",
-    "detail": "vehicle #2"
-  },
-  {
-    "camera_id": "cam2",
-    "zone": "Zone Alpha",
-    "timestamp": "2026-09-27T05:27:18",
-    "track_id": 1,
-    "face_status": "insufficient_face_data",
-    "label": "insufficient_face_data",
-    "global_id": null,
-    "type": "person",
-    "detail": "person #1"
-  },
-  {
-    "camera_id": "cam4",
-    "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:18",
-    "track_id": 1,
-    "type": "vehicle",
-    "detail": "vehicle #1"
-  },
-  {
-    "camera_id": "cam3",
-    "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:17",
-    "track_id": 1,
-    "face_status": "insufficient_face_data",
-    "label": "insufficient_face_data",
-    "global_id": null,
-    "type": "person",
-    "detail": "person #1"
-  },
-  {
-    "camera_id": "cam4",
-    "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:14",
-    "track_id": 1,
-    "type": "vehicle",
-    "detail": "vehicle #1"
-  },
-  {
-    "camera_id": "cam4",
-    "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:11",
-    "track_id": 2,
-    "type": "vehicle",
-    "detail": "vehicle #2"
-  },
-  {
-    "camera_id": "cam4",
-    "zone": "Zone Bravo",
-    "timestamp": "2026-09-27T05:27:10",
+    "timestamp": "2026-09-27T10:13:50",
     "track_id": 1,
     "type": "vehicle",
     "detail": "vehicle #1"
@@ -261,7 +175,99 @@
   {
     "camera_id": "cam2",
     "zone": "Zone Alpha",
-    "timestamp": "2026-09-27T05:27:09",
+    "timestamp": "2026-09-27T10:13:47",
+    "track_id": 1,
+    "face_status": "insufficient_face_data",
+    "label": "insufficient_face_data",
+    "global_id": null,
+    "type": "person",
+    "detail": "person #1"
+  },
+  {
+    "camera_id": "cam4",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-27T10:13:47",
+    "track_id": 2,
+    "type": "vehicle",
+    "detail": "vehicle #2"
+  },
+  {
+    "camera_id": "cam3",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-27T10:13:46",
+    "track_id": 1,
+    "face_status": "insufficient_face_data",
+    "label": "insufficient_face_data",
+    "global_id": null,
+    "type": "person",
+    "detail": "person #1"
+  },
+  {
+    "camera_id": "cam4",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-27T10:13:46",
+    "track_id": 1,
+    "type": "vehicle",
+    "detail": "vehicle #1"
+  },
+  {
+    "camera_id": "cam4",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-27T10:13:41",
+    "track_id": 2,
+    "type": "vehicle",
+    "detail": "vehicle #2"
+  },
+  {
+    "camera_id": "cam4",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-27T10:13:41",
+    "track_id": 1,
+    "type": "vehicle",
+    "detail": "vehicle #1"
+  },
+  {
+    "camera_id": "cam2",
+    "zone": "Zone Alpha",
+    "timestamp": "2026-09-27T10:13:39",
+    "track_id": 1,
+    "face_status": "insufficient_face_data",
+    "label": "insufficient_face_data",
+    "global_id": null,
+    "type": "person",
+    "detail": "person #1"
+  },
+  {
+    "camera_id": "cam4",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-27T10:13:37",
+    "track_id": 2,
+    "type": "vehicle",
+    "detail": "vehicle #2"
+  },
+  {
+    "camera_id": "cam4",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-27T10:13:37",
+    "track_id": 1,
+    "type": "vehicle",
+    "detail": "vehicle #1"
+  },
+  {
+    "camera_id": "cam2",
+    "zone": "Zone Alpha",
+    "timestamp": "2026-09-27T10:13:35",
+    "track_id": 1,
+    "face_status": "insufficient_face_data",
+    "label": "insufficient_face_data",
+    "global_id": "G0001",
+    "type": "person",
+    "detail": "person #1"
+  },
+  {
+    "camera_id": "cam1",
+    "zone": "Zone Alpha",
+    "timestamp": "2026-09-27T10:13:33",
     "track_id": 1,
     "face_status": "insufficient_face_data",
     "label": "insufficient_face_data",

@@ -1056,7 +1056,13 @@
 
     function updateClock() {
       const now = new Date();
-      document.getElementById('liveClock').textContent = now.toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('liveClock').textContent = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     }
     setInterval(updateClock, 1000);
     updateClock();
@@ -1090,7 +1096,6 @@
                 <span>·</span>
                 <span>${c.location_name}</span>
                 <span class="zone-tag">${c.zone}</span>
-                ${c.vehicle_only ? '<span class="zone-tag" style="background: rgba(14, 165, 233, 0.2); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.4);">Vehicle Only</span>' : ''}
               </div>
               <div class="feed-live-indicator">
                 <span class="live-dot"></span>
@@ -1261,10 +1266,6 @@
         const facesList = document.getElementById(`faces-list-${c.camera_id}`);
         const faceCount = document.getElementById(`face-count-${c.camera_id}`);
         if (facesList && faceCount) {
-          if (c.vehicle_only) {
-            faceCount.textContent = 'Disabled';
-            facesList.innerHTML = '<div class="empty-state" style="padding: 10px; color: var(--text-tertiary);">Vehicle-only monitoring<br><span style="font-size: 11px;">(Person & face detection disabled)</span></div>';
-          } else {
             faceCount.textContent = `${localFaces.length} logged`;
             if (localFaces.length === 0) {
               facesList.innerHTML = '<div class="empty-state" style="padding: 10px;">Scanning for faces…</div>';
@@ -1277,7 +1278,6 @@
                 </div>
               `).join('');
             }
-          }
         }
 
         // Local detections summary
