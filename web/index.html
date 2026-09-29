@@ -1,94 +1,140 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>IBVAP Multi-Camera Perimeter Security Dashboard</title>
+  <title>IBVAP | Intelligent Perimeter Surveillance & Re-ID Command Center</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
   <style>
     /* ============================================================
-       DESIGN SYSTEM TOKENS
+       60 : 30 : 10 COLOR SYSTEM & DESIGN TOKENS
+       ============================================================
+       60% DOMINANT (Foundation & Canvas): Deep matte cockpit slate (#080c14, #0e1524)
+       30% SECONDARY (Structure & Hierarchy): Aerospace container cards, borders, tables (#131c2e, #18243b)
+       10% ACCENT (Vibrant Semantic Highlights): Cyan (#00d2ff), Emerald (#10b981), Amber (#f59e0b), Crimson (#f43f5e), Violet (#818cf8)
        ============================================================ */
     :root {
-      /* Spacing scale: 4 / 8 / 12 / 16 / 24px */
+      /* Spacing scale */
       --sp-1: 4px;
       --sp-2: 8px;
       --sp-3: 12px;
       --sp-4: 16px;
       --sp-6: 24px;
 
-      /* Corner radius – one value for the whole UI */
+      /* Radii */
+      --radius-xs: 4px;
       --radius-sm: 6px;
-      --radius-md: 8px;
-      --radius-lg: 12px;
+      --radius-md: 9px;
+      --radius-lg: 14px;
       --radius-pill: 999px;
 
-      /* Canvas & surfaces – darker navy */
-      --bg-base:            #04070f;  /* page canvas */
-      --bg-surface:         #080e1b;  /* card */
-      --bg-surface-raised:  #0d1526;  /* raised inset */
-      --bg-surface-overlay: #131e33;  /* topmost layer */
+      /* 60% DOMINANT: Foundation & Canvas */
+      --bg-base: #080c14;
+      /* Deep matte cockpit slate canvas (60%) */
+      --bg-surface: #0c1322;
+      /* Primary section foundation */
+      --bg-card: #111a2c;
+      /* Primary card container */
+      --bg-card-raised: #162238;
+      /* Elevated inset sub-panel */
+      --bg-card-overlay: #1c2a44;
+      /* Topmost elevated items */
+      --bg-inset: #090f1a;
+      /* Well / inset panel */
 
-      /* Borders */
-      --border-subtle:  #1d2a40;
-      --border-default: #263350;
-      --border-strong:  #344468;
+      /* Typography Contrast (Within the 60% neutral dominance) */
+      --text-white: #ffffff;
+      --text-primary: #f1f5f9;
+      /* High-clarity primary text */
+      --text-secondary: #94a3b8;
+      /* Readable muted metadata */
+      --text-tertiary: #64748b;
+      /* Dim timestamps & labels */
+      --text-dim: #475569;
+      /* Inactive states */
 
-      /* Text */
-      --text-primary:   #eef2ff;
-      --text-secondary: #8fa3c0;
-      --text-tertiary:  #4f647e;
-      --text-accent:    #93c5fd;
+      /* 30% SECONDARY: Structural Borders, Dividers & Containers */
+      --border-subtle: rgba(148, 163, 184, 0.12);
+      --border-default: rgba(148, 163, 184, 0.22);
+      --border-strong: rgba(148, 163, 184, 0.38);
+      --border-card: rgba(56, 189, 248, 0.15);
 
-      /* Accent palette – restrained, one hue per semantic role */
-      --color-info:         #3b82f6;  /* blue  – info / neutral state */
-      --color-info-muted:   rgba(59,130,246,0.15);
-      --color-info-border:  rgba(59,130,246,0.35);
+      /* 10% ACCENT: Purposeful, High-Energy Semantic Palette */
+      /* 1. Electric Cyan: Systems, Telemetry, Active Camera, Trajectory */
+      --accent-cyan: #00d2ff;
+      --accent-cyan-glow: rgba(0, 210, 255, 0.35);
+      --accent-cyan-bg: rgba(0, 210, 255, 0.12);
+      --accent-cyan-border: rgba(0, 210, 255, 0.40);
+      --accent-cyan-text: #7dd3fc;
 
-      --color-critical:        #ef4444;  /* red   – alerts / tripped / unauthorized */
-      --color-critical-muted:  rgba(239,68,68,0.14);
-      --color-critical-border: rgba(239,68,68,0.40);
-      --color-critical-text:   #fca5a5;
+      /* 2. Tactical Emerald: Verified, Authorized, Normal Fence, Healthy */
+      --accent-emerald: #10b981;
+      --accent-emerald-glow: rgba(16, 185, 129, 0.40);
+      --accent-emerald-bg: rgba(16, 185, 129, 0.14);
+      --accent-emerald-border: rgba(16, 185, 129, 0.42);
+      --accent-emerald-text: #6ee7b7;
 
-      --color-success:        #22c55e;  /* green – normal / enrolled / ok */
-      --color-success-muted:  rgba(34,197,94,0.14);
-      --color-success-border: rgba(34,197,94,0.35);
-      --color-success-text:   #86efac;
+      /* 3. Perimeter Crimson: Breach, Tripped Fence, Unauthorized, LIVE Beacon */
+      --accent-crimson: #f43f5e;
+      --accent-crimson-glow: rgba(244, 63, 94, 0.45);
+      --accent-crimson-bg: rgba(244, 63, 94, 0.14);
+      --accent-crimson-border: rgba(244, 63, 94, 0.45);
+      --accent-crimson-text: #fda4af;
 
-      --color-warning:        #f59e0b;  /* amber – unknown / pending / degraded */
-      --color-warning-muted:  rgba(245,158,11,0.13);
-      --color-warning-border: rgba(245,158,11,0.35);
-      --color-warning-text:   #fcd34d;
+      /* 4. Amber / Gold: Vehicles, Plates, Unknown Face, Warning */
+      --accent-amber: #f59e0b;
+      --accent-amber-glow: rgba(245, 158, 11, 0.40);
+      --accent-amber-bg: rgba(245, 158, 11, 0.14);
+      --accent-amber-border: rgba(245, 158, 11, 0.45);
+      --accent-amber-text: #fde68a;
 
-      --color-id:             #818cf8;  /* violet – global IDs / Re-ID track */
-      --color-id-muted:       rgba(129,140,248,0.15);
-      --color-id-border:      rgba(129,140,248,0.35);
+      /* 5. Intelligence Violet: Re-ID, Global ID Tags, Cross-Camera Links */
+      --accent-violet: #818cf8;
+      --accent-violet-glow: rgba(129, 140, 248, 0.35);
+      --accent-violet-bg: rgba(129, 140, 248, 0.14);
+      --accent-violet-border: rgba(129, 140, 248, 0.40);
+      --accent-violet-text: #c7d2fe;
 
-      /* Legacy accent names – retained for gradient references */
-      --accent-cyan:    #38bdf8;
-      --accent-blue:    #3b82f6;
-      --accent-purple:  #818cf8;
-      --accent-emerald: #22c55e;
-      --accent-amber:   #f59e0b;
-      --accent-rose:    #ef4444;
+      /* Zone Signatures */
+      --zone-alpha-bg: rgba(14, 165, 233, 0.16);
+      --zone-alpha-border: rgba(14, 165, 233, 0.50);
+      --zone-alpha-text: #38bdf8;
 
-      /* Elevation shadows */
-      --shadow-xs: 0 1px 3px rgba(0,0,0,0.40);
-      --shadow-sm: 0 2px 8px rgba(0,0,0,0.45);
-      --shadow-md: 0 4px 16px rgba(0,0,0,0.55);
-      --shadow-lg: 0 8px 28px rgba(0,0,0,0.65);
-      --shadow-glow-id: 0 0 14px rgba(129,140,248,0.18);
+      --zone-bravo-bg: rgba(16, 185, 129, 0.16);
+      --zone-bravo-border: rgba(16, 185, 129, 0.50);
+      --zone-bravo-text: #34d399;
+
+      /* Shadows & Elevations */
+      --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.45);
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.50);
+      --shadow-md: 0 4px 18px rgba(0, 0, 0, 0.65);
+      --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.80);
+      --shadow-glow-cyan: 0 0 16px var(--accent-cyan-glow);
+      --shadow-glow-violet: 0 0 16px var(--accent-violet-glow);
     }
 
     /* ============================================================
-       RESET & BASE
+       RESET & BASE STYLING
        ============================================================ */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg-base);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-base);
+      background-image:
+        radial-gradient(ellipse at 15% 0%, rgba(0, 210, 255, 0.05) 0%, transparent 45%),
+        radial-gradient(ellipse at 85% 0%, rgba(129, 140, 248, 0.05) 0%, transparent 45%);
       color: var(--text-primary);
       min-height: 100vh;
       display: flex;
@@ -97,147 +143,310 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Shared scrollbar styling */
-    ::-webkit-scrollbar { width: 4px; height: 4px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: var(--radius-pill); }
-    ::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
+    /* Refined scrollbar */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-inset);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #27354d;
+      border-radius: var(--radius-pill);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3b4e6d;
+    }
 
     /* ============================================================
-       HEADER
+       TOP HEADER (COMMAND HUB NAVIGATION)
        ============================================================ */
     header {
       background: var(--bg-surface);
-      border-bottom: 1px solid var(--border-subtle);
-      padding: var(--sp-2) var(--sp-6);
+      border-bottom: 1px solid var(--border-default);
+      padding: 0 var(--sp-4);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 52px;
+      height: 56px;
       flex-shrink: 0;
       z-index: 100;
       box-shadow: var(--shadow-sm);
     }
+
     .brand {
       display: flex;
       align-items: center;
       gap: var(--sp-3);
     }
-    .brand-icon {
-      width: 32px;
-      height: 32px;
-      background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-purple) 100%);
+
+    /* Tactical Surveillance Crest Icon */
+    .brand-crest {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 50%, #6366f1 100%);
       border-radius: var(--radius-sm);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 800;
-      font-size: 13px;
-      color: #fff;
-      letter-spacing: -0.5px;
-      box-shadow: 0 0 14px rgba(56,189,248,0.40), var(--shadow-xs);
+      box-shadow: 0 0 16px rgba(14, 165, 233, 0.45), var(--shadow-xs);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      position: relative;
       flex-shrink: 0;
     }
+
+    .brand-crest svg {
+      width: 20px;
+      height: 20px;
+      fill: #ffffff;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     .brand-title {
       font-size: 15px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: var(--text-primary);
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: var(--text-white);
       line-height: 1.2;
     }
+
+    .brand-version-badge {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      background: var(--accent-cyan-bg);
+      border: 1px solid var(--accent-cyan-border);
+      padding: 1px 6px;
+      border-radius: var(--radius-pill);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
     .brand-subtitle {
       font-size: 11px;
-      color: var(--text-tertiary);
+      color: var(--text-secondary);
       font-weight: 400;
       margin-top: 1px;
     }
+
+    /* Header Quick Stats Strip (10% colorful KPI counters) */
+    .header-kpi-bar {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+    }
+
+    @media (max-width: 1080px) {
+      .header-kpi-bar {
+        display: none;
+      }
+    }
+
+    .kpi-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .kpi-chip-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .kpi-chip-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .kpi-chip-label {
+      font-size: 10px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* Live System Telemetry / Clock */
     .system-status {
       display: flex;
       align-items: center;
       gap: var(--sp-3);
     }
+
+    .system-beacon {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--accent-emerald-text);
+      background: var(--accent-emerald-bg);
+      border: 1px solid var(--accent-emerald-border);
+      padding: 4px 9px;
+      border-radius: var(--radius-pill);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .beacon-pulse {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-emerald);
+      box-shadow: 0 0 8px var(--accent-emerald);
+      animation: heartbeat 2s infinite ease-in-out;
+    }
+
+    @keyframes heartbeat {
+      0% {
+        transform: scale(0.9);
+        opacity: 0.8;
+      }
+
+      50% {
+        transform: scale(1.3);
+        opacity: 1;
+        box-shadow: 0 0 12px var(--accent-emerald);
+      }
+
+      100% {
+        transform: scale(0.9);
+        opacity: 0.8;
+      }
+    }
+
     .live-clock {
       font-family: 'JetBrains Mono', monospace;
       font-size: 12px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      background: var(--bg-surface-raised);
-      padding: var(--sp-1) var(--sp-2);
+      font-weight: 600;
+      color: var(--accent-cyan);
+      background: var(--bg-card);
+      padding: 4px 10px;
       border-radius: var(--radius-sm);
       border: 1px solid var(--border-default);
-      letter-spacing: 0.02em;
+      letter-spacing: 0.04em;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
     }
 
     /* ============================================================
-       HEALTH RIBBON
+       HEALTH RIBBON STRIP
        ============================================================ */
     .health-bar {
       display: flex;
       gap: var(--sp-2);
-      padding: var(--sp-1) var(--sp-6);
-      background: rgba(8,12,20,0.70);
+      padding: 0 var(--sp-4);
+      background: #090e1a;
       border-bottom: 1px solid var(--border-subtle);
       overflow-x: auto;
       align-items: center;
       height: 38px;
       flex-shrink: 0;
     }
+
     .health-label {
       font-size: 10px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: var(--text-tertiary);
+      color: var(--text-secondary);
       white-space: nowrap;
       margin-right: var(--sp-1);
+      display: flex;
+      align-items: center;
+      gap: 5px;
       flex-shrink: 0;
     }
-    /* Health pills – compact status cards */
+
+    .health-label svg {
+      width: 12px;
+      height: 12px;
+      fill: var(--accent-cyan);
+    }
+
     .health-pill {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 3px 10px 3px 7px;
-      background: var(--bg-surface-raised);
+      padding: 3px 10px;
+      background: var(--bg-card);
       border: 1px solid var(--border-default);
       border-radius: var(--radius-pill);
       font-size: 11px;
       white-space: nowrap;
-      transition: border-color 0.2s, background 0.2s;
+      transition: all 0.2s ease;
       cursor: default;
     }
+
     .health-pill:hover {
-      border-color: var(--border-strong);
-      background: var(--bg-surface-overlay);
+      border-color: var(--accent-cyan-border);
+      background: var(--bg-card-raised);
     }
+
     .health-dot {
       width: 7px;
       height: 7px;
       border-radius: 50%;
       flex-shrink: 0;
     }
-    .dot-healthy             { background: var(--color-success);  box-shadow: 0 0 6px rgba(34,197,94,0.5); }
-    .dot-degraded            { background: var(--color-warning);  box-shadow: 0 0 6px rgba(245,158,11,0.5); }
-    .dot-offline             { background: var(--color-critical); box-shadow: 0 0 6px rgba(239,68,68,0.5); }
+
+    .dot-healthy {
+      background: var(--accent-emerald);
+      box-shadow: 0 0 8px var(--accent-emerald-glow);
+    }
+
+    .dot-degraded {
+      background: var(--accent-amber);
+      box-shadow: 0 0 8px var(--accent-amber-glow);
+    }
+
+    .dot-offline {
+      background: var(--accent-crimson);
+      box-shadow: 0 0 8px var(--accent-crimson-glow);
+    }
+
     .dot-starting,
     .dot-stream_ended,
     .dot-stream_ended_looping {
       background: var(--accent-cyan);
-      box-shadow: 0 0 6px rgba(56,189,248,0.5);
+      box-shadow: 0 0 8px var(--accent-cyan-glow);
     }
 
     /* ============================================================
-       DASHBOARD LAYOUT
+       DASHBOARD MAIN CONTAINER (SPLIT SCREEN LAYOUT)
        ============================================================ */
     .dashboard-container {
       width: 100%;
-      height: calc(100vh - 90px); /* header 52 + health 38 */
+      height: calc(100vh - 94px);
+      /* 56 header + 38 health */
       padding: var(--sp-3) var(--sp-4);
       display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
+      grid-template-columns: 1.18fr 0.82fr;
       gap: var(--sp-3);
       overflow: hidden;
     }
+
     @media (max-width: 1200px) {
       .dashboard-container {
         height: auto;
@@ -247,49 +456,47 @@
       }
     }
 
-    /* ============================================================
-       SECTION HEADER
-       ============================================================ */
+    /* Section Header */
     .section-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: var(--sp-2);
-      padding-bottom: var(--sp-2);
+      padding-bottom: 6px;
       border-bottom: 1px solid var(--border-subtle);
       flex-shrink: 0;
     }
+
     .section-title {
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 700;
-      letter-spacing: 0.10em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--text-tertiary);
+      color: var(--text-primary);
       display: flex;
       align-items: center;
-      gap: var(--sp-2);
+      gap: 7px;
     }
-    .section-title::before {
-      content: "";
-      display: block;
-      width: 3px;
-      height: 12px;
-      background: linear-gradient(180deg, var(--accent-cyan), var(--accent-purple));
-      border-radius: var(--radius-pill);
+
+    .section-title-icon {
+      width: 14px;
+      height: 14px;
+      fill: var(--accent-cyan);
     }
+
     .section-badge {
       font-size: 10px;
       font-weight: 600;
-      color: var(--text-accent);
-      background: var(--color-info-muted);
+      color: var(--accent-cyan-text);
+      background: var(--accent-cyan-bg);
       padding: 2px 8px;
       border-radius: var(--radius-pill);
-      border: 1px solid var(--color-info-border);
-      letter-spacing: 0.02em;
+      border: 1px solid var(--accent-cyan-border);
+      letter-spacing: 0.03em;
     }
 
     /* ============================================================
-       LEFT COLUMN: CAMERA SECTION
+       LEFT COLUMN: PER-CAMERA 4-GRID SURVEILLANCE MATRIX
        ============================================================ */
     .camera-section {
       display: flex;
@@ -298,6 +505,7 @@
       min-height: 0;
       overflow: hidden;
     }
+
     .camera-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -307,40 +515,50 @@
       min-height: 0;
       height: calc(100% - 32px);
     }
+
     @media (max-width: 1200px) {
-      .camera-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; }
+      .camera-grid {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+      }
     }
-    @media (max-width: 600px) {
-      .camera-grid { grid-template-columns: 1fr; }
+
+    @media (max-width: 680px) {
+      .camera-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     /* Camera Card */
     .cam-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
+      background: var(--bg-card);
+      border: 1px solid var(--border-default);
       border-radius: var(--radius-md);
       overflow: hidden;
       display: flex;
       flex-direction: column;
       box-shadow: var(--shadow-sm);
-      transition: border-color 0.2s, box-shadow 0.2s;
+      transition: all 0.25s ease;
       min-height: 0;
-    }
-    .cam-card:hover {
-      border-color: var(--border-strong);
-      box-shadow: var(--shadow-md);
+      position: relative;
     }
 
-    /* Feed */
+    .cam-card:hover {
+      border-color: var(--accent-cyan-border);
+      box-shadow: var(--shadow-md), 0 0 12px rgba(0, 210, 255, 0.12);
+    }
+
+    /* Video Feed Container & HUD Crosshair Accents */
     .feed-container {
       position: relative;
-      background: #000;
+      background: #000000;
       aspect-ratio: 16 / 9;
       width: 100%;
       overflow: hidden;
       flex: 1;
       min-height: 0;
     }
+
     .feed-img {
       width: 100%;
       height: 100%;
@@ -348,7 +566,45 @@
       display: block;
     }
 
-    /* Feed header bar (camera name / zone / LIVE) */
+    /* Tactical Optical Viewfinder HUD Corners */
+    .hud-corner {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      pointer-events: none;
+      z-index: 5;
+      opacity: 0.85;
+    }
+
+    .hud-corner.tl {
+      top: 7px;
+      left: 7px;
+      border-top: 2px solid var(--accent-cyan);
+      border-left: 2px solid var(--accent-cyan);
+    }
+
+    .hud-corner.tr {
+      top: 7px;
+      right: 7px;
+      border-top: 2px solid var(--accent-cyan);
+      border-right: 2px solid var(--accent-cyan);
+    }
+
+    .hud-corner.bl {
+      bottom: 7px;
+      left: 7px;
+      border-bottom: 2px solid var(--accent-cyan);
+      border-left: 2px solid var(--accent-cyan);
+    }
+
+    .hud-corner.br {
+      bottom: 7px;
+      right: 7px;
+      border-bottom: 2px solid var(--accent-cyan);
+      border-right: 2px solid var(--accent-cyan);
+    }
+
+    /* Feed Top Header Overlay */
     .feed-overlay-top {
       position: absolute;
       top: 0;
@@ -357,75 +613,122 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 5px 7px;
-      background: linear-gradient(180deg, rgba(8,12,20,0.88) 0%, rgba(8,12,20,0.0) 100%);
+      padding: 5px 8px;
+      background: linear-gradient(180deg, rgba(8, 12, 20, 0.96) 0%, rgba(8, 12, 20, 0.70) 65%, rgba(8, 12, 20, 0.0) 100%);
       pointer-events: none;
+      z-index: 6;
     }
-    .cam-tag {
+
+    .cam-tag-group {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      padding: 3px 8px;
-      background: rgba(8,12,20,0.78);
-      backdrop-filter: blur(6px);
+      gap: 6px;
+      background: rgba(8, 12, 20, 0.88);
+      backdrop-filter: blur(8px);
+      padding: 2px 8px 2px 4px;
       border-radius: var(--radius-pill);
-      border: 1px solid rgba(255,255,255,0.10);
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text-primary);
-      letter-spacing: 0.01em;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
     }
-    /* Zone badge inside cam-tag */
+
+    .cam-id-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 11px;
+      color: #ffffff;
+      background: rgba(14, 165, 233, 0.85);
+      padding: 2px 7px;
+      border-radius: var(--radius-xs);
+      letter-spacing: 0.05em;
+      box-shadow: 0 0 8px rgba(14, 165, 233, 0.4);
+    }
+
+    .cam-loc-pill {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-primary);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    }
+
+    /* Zone Badges (Vivid color coding) */
     .zone-tag {
-      background: var(--color-info-muted);
-      color: var(--text-accent);
-      padding: 1px 6px;
+      padding: 1px 7px;
       border-radius: var(--radius-pill);
       font-size: 9.5px;
-      font-weight: 600;
-      border: 1px solid var(--color-info-border);
-      letter-spacing: 0.02em;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
     }
-    /* LIVE indicator */
+
+    .zone-alpha {
+      background: var(--zone-alpha-bg);
+      border: 1px solid var(--zone-alpha-border);
+      color: var(--zone-alpha-text);
+    }
+
+    .zone-bravo {
+      background: var(--zone-bravo-bg);
+      border: 1px solid var(--zone-bravo-border);
+      color: var(--zone-bravo-text);
+    }
+
+    /* Live Recording Indicator */
     .feed-live-indicator {
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      background: var(--color-critical-muted);
-      border: 1px solid var(--color-critical-border);
-      color: var(--color-critical-text);
+      background: var(--accent-crimson-bg);
+      border: 1px solid var(--accent-crimson-border);
+      color: var(--accent-crimson-text);
       padding: 2px 7px;
       border-radius: var(--radius-pill);
       font-size: 9.5px;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-    }
-    .live-dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--color-critical);
-      animation: blink-pulse 1.8s infinite;
-    }
-    @keyframes blink-pulse {
-      0%   { opacity: 0.7; box-shadow: 0 0 0 0 rgba(239,68,68,0.7); }
-      60%  { opacity: 1;   box-shadow: 0 0 0 4px rgba(239,68,68,0); }
-      100% { opacity: 0.7; box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+      box-shadow: 0 0 10px rgba(244, 63, 94, 0.25);
     }
 
-    /* Camera sub-panels (Fence + Faces) */
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-crimson);
+      box-shadow: 0 0 6px var(--accent-crimson);
+      animation: blink-pulse 1.8s infinite;
+    }
+
+    @keyframes blink-pulse {
+      0% {
+        opacity: 0.7;
+        transform: scale(0.9);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.2);
+        box-shadow: 0 0 8px var(--accent-crimson);
+      }
+
+      100% {
+        opacity: 0.7;
+        transform: scale(0.9);
+      }
+    }
+
+    /* Camera Sub-Panels (Virtual Fence + Face Engine) */
     .cam-panels {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 0.88fr 1.12fr;
       gap: var(--sp-1);
       padding: var(--sp-1) var(--sp-2);
-      background: var(--bg-surface);
+      background: var(--bg-card);
       border-top: 1px solid var(--border-subtle);
       flex-shrink: 0;
     }
+
     .panel-box {
-      background: var(--bg-surface-raised);
+      background: var(--bg-card-raised);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-sm);
       padding: var(--sp-1) var(--sp-2);
@@ -433,290 +736,373 @@
       flex-direction: column;
       gap: 3px;
     }
+
     .panel-box-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1px;
+      margin-bottom: 2px;
     }
+
     .panel-box-title {
-      font-size: 9px;
+      font-size: 9.5px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: var(--text-tertiary);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
-    /* Fence */
+    .panel-box-title svg {
+      width: 10px;
+      height: 10px;
+      fill: var(--text-tertiary);
+    }
+
+    /* Virtual Fence Status Display */
     .fence-status-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 2px var(--sp-1);
-      background: var(--bg-surface-overlay);
-      border-radius: var(--radius-sm);
+      background: var(--bg-inset);
+      border-radius: var(--radius-xs);
       font-size: 9.5px;
       color: var(--text-secondary);
     }
-    .fence-status-row span:last-child { font-weight: 600; color: var(--text-primary); }
 
-    /* Unified badge/pill base */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      padding: 2px 7px;
-      border-radius: var(--radius-pill);
-      font-size: 9px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      border: 1px solid transparent;
-      white-space: nowrap;
+    .fence-status-row span:last-child {
+      font-weight: 600;
+      color: var(--text-primary);
     }
-    /* Semantic badge variants */
-    .badge-success  { background: var(--color-success-muted);  color: var(--color-success-text);   border-color: var(--color-success-border); }
-    .badge-critical { background: var(--color-critical-muted); color: var(--color-critical-text); border-color: var(--color-critical-border); }
-    .badge-warning  { background: var(--color-warning-muted);  color: var(--color-warning-text);  border-color: var(--color-warning-border); }
-    .badge-info     { background: var(--color-info-muted);     color: var(--text-accent);          border-color: var(--color-info-border); }
-    .badge-neutral  { background: rgba(79,100,126,0.18);       color: var(--text-secondary);       border-color: rgba(79,100,126,0.35); }
-    .badge-id       { background: var(--color-id-muted);       color: #c7d2fe;                     border-color: var(--color-id-border); }
 
-    /* Fence badge – proper capsule pill */
+    .fence-event-meta {
+      font-size: 9.5px;
+      color: var(--text-secondary);
+      line-height: 1.35;
+      padding: 1px 2px;
+    }
+
+    /* Fence Badges */
     .fence-badge {
       display: inline-flex;
       align-items: center;
+      gap: 4px;
       padding: 2px 8px;
       border-radius: var(--radius-pill);
       font-size: 9px;
-      font-weight: 700;
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.07em;
+      letter-spacing: 0.08em;
       white-space: nowrap;
-      border: 1px solid transparent;
-    }
-    .fence-normal  { background: var(--color-success-muted);  color: var(--color-success-text);  border-color: var(--color-success-border); }
-    .fence-tripped { background: var(--color-critical-muted); color: var(--color-critical-text); border-color: var(--color-critical-border); }
-
-    .fence-event-meta {
-      font-size: 9px;
-      color: var(--text-secondary);
-      line-height: 1.35;
     }
 
-    /* Face log */
+    .fence-normal {
+      background: var(--accent-emerald-bg);
+      color: var(--accent-emerald-text);
+      border: 1px solid var(--accent-emerald-border);
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.2);
+    }
+
+    .fence-tripped {
+      background: var(--accent-crimson-bg);
+      color: var(--accent-crimson-text);
+      border: 1px solid var(--accent-crimson-border);
+      box-shadow: 0 0 12px rgba(244, 63, 94, 0.4);
+      animation: alert-flash 1.2s infinite ease-in-out;
+    }
+
+    @keyframes alert-flash {
+      0% {
+        opacity: 0.85;
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.03);
+      }
+
+      100% {
+        opacity: 0.85;
+      }
+    }
+
+    /* Face Recognition Log List */
     .face-log-list {
       display: flex;
       flex-direction: column;
       gap: 2px;
       overflow-y: auto;
-      max-height: 36px;
+      max-height: 48px;
     }
+
     .face-log-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: var(--bg-surface-overlay);
-      padding: 2px var(--sp-1);
-      border-radius: var(--radius-sm);
-      font-size: 9px;
+      background: var(--bg-inset);
+      padding: 2px 6px;
+      border-radius: var(--radius-xs);
+      font-size: 8.5px;
       color: var(--text-secondary);
+      border-left: 2px solid var(--border-default);
+      white-space: nowrap;
+      gap: 6px;
+      overflow: hidden;
+      min-width: 0;
     }
-    /* Face status tags – use unified badge */
+
     .face-status-tag {
       display: inline-flex;
       align-items: center;
-      padding: 1px 6px;
+      padding: 1px 5px;
       border-radius: var(--radius-pill);
-      font-size: 8.5px;
+      font-size: 7.5px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      border: 1px solid transparent;
-    }
-    .tag-enrolled { background: var(--color-success-muted);  color: var(--color-success-text);  border-color: var(--color-success-border); }
-    .tag-unknown  { background: var(--color-warning-muted);  color: var(--color-warning-text);  border-color: var(--color-warning-border); }
-    .tag-no-face  {
-      background: rgba(79,100,126,0.14);
-      color: var(--text-secondary);
-      border-color: rgba(79,100,126,0.30);
-      font-size: 6.5px;
-      padding: 0 4px;
       letter-spacing: 0.02em;
-      line-height: 1.2;
-      height: 14px;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex-shrink: 1;
+      min-width: 0;
     }
 
-    /* Camera footer – FPS / Latest detection */
+    .face-log-meta {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-tertiary);
+      font-size: 8px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      letter-spacing: -0.01em;
+    }
+
+    .tag-enrolled {
+      background: var(--accent-emerald-bg);
+      color: var(--accent-emerald-text);
+      border: 1px solid var(--accent-emerald-border);
+    }
+
+    .tag-unknown {
+      background: var(--accent-amber-bg);
+      color: var(--accent-amber-text);
+      border: 1px solid var(--accent-amber-border);
+    }
+
+    .tag-no-face {
+      background: rgba(100, 116, 139, 0.16);
+      color: var(--text-secondary);
+      border: 1px solid rgba(100, 116, 139, 0.35);
+      font-size: 7.5px;
+    }
+
+    /* Camera Footer Bar: FPS & Telemetry */
     .cam-local-detections {
       padding: 3px var(--sp-2);
-      background: rgba(8,12,20,0.60);
+      background: #090e1a;
       border-top: 1px solid var(--border-subtle);
       font-size: 9.5px;
       color: var(--text-tertiary);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      height: 22px;
+      height: 24px;
       flex-shrink: 0;
       font-family: 'JetBrains Mono', monospace;
-      letter-spacing: 0.01em;
     }
-    .cam-local-detections strong { color: var(--text-secondary); font-weight: 600; }
-    .fps-badge {
-      background: var(--bg-surface-raised);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-pill);
-      padding: 0 6px;
-      font-size: 9px;
+
+    .cam-local-detections strong {
+      color: var(--text-primary);
       font-weight: 600;
-      color: var(--text-secondary);
+    }
+
+    .fps-badge {
+      background: var(--bg-card-raised);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-pill);
+      padding: 1px 7px;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--accent-cyan);
     }
 
     /* ============================================================
-       RIGHT COLUMN: GLOBAL RE-ID SECTION
+       RIGHT COLUMN: GLOBAL RE-ID & MULTI-CAMERA COMMAND
        ============================================================ */
     .cross-section {
       background: var(--bg-surface);
-      border: 1px solid var(--border-default);
+      border: 2px solid #818cf8;
       border-radius: var(--radius-lg);
-      padding: var(--sp-3) var(--sp-3);
-      box-shadow: var(--shadow-md), var(--shadow-glow-id);
+      padding: var(--sp-3);
+      box-shadow: 0 0 12px rgba(129, 140, 248, 0.35), 0 4px 20px rgba(0, 0, 0, 0.5);
       position: relative;
       overflow-y: auto;
-      overflow-x: hidden;   /* no horizontal scrollbar */
+      overflow-x: hidden;
       height: 100%;
       min-height: 0;
       display: flex;
       flex-direction: column;
       gap: var(--sp-3);
     }
-    /* Top accent stripe */
+
     .cross-section::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan), var(--accent-purple));
-      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      display: none;
     }
+
     .cross-header {
       flex-shrink: 0;
-      padding-top: var(--sp-1);
+      padding-top: 2px;
     }
+
     .cross-header-title {
       font-size: 14px;
-      font-weight: 700;
-      color: var(--text-primary);
+      font-weight: 800;
+      color: var(--text-white);
       display: flex;
       align-items: center;
-      gap: var(--sp-2);
+      justify-content: space-between;
       letter-spacing: -0.01em;
     }
+
+    .cross-header-title-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     .cross-header-desc {
-      font-size: 10.5px;
+      font-size: 11px;
       color: var(--text-secondary);
-      margin-top: var(--sp-1);
-      line-height: 1.5;
+      margin-top: 3px;
+      line-height: 1.45;
     }
 
     /* ============================================================
-       TRANSIT TIMELINE
+       CROSS-CAMERA TRANSIT TIMELINE (MISSION CONTROL FLOW)
        ============================================================ */
     .breadcrumb-box {
-      background: var(--bg-surface-raised);
-      border: 1px solid var(--border-default);
-      border-radius: var(--radius-md);
+      border: var(--bezel-width) solid transparent;
+      border-radius: var(--bezel-radius);
+      background:
+        linear-gradient(#111a2c, #111a2c) padding-box,
+        var(--bezel-gradient) border-box;
+      box-shadow: var(--bezel-shadow);
       padding: var(--sp-2) var(--sp-3);
       flex-shrink: 0;
     }
+
     .breadcrumb-title {
-      font-size: 9.5px;
+      font-size: 10px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.10em;
-      color: var(--color-id);
+      letter-spacing: 0.08em;
+      color: var(--accent-violet-text);
       margin-bottom: var(--sp-2);
       display: flex;
       align-items: center;
-      gap: var(--sp-1);
+      justify-content: space-between;
     }
-    .breadcrumb-title::before {
-      content: "";
-      display: block;
-      width: 3px;
-      height: 10px;
-      background: var(--color-id);
-      border-radius: var(--radius-pill);
+
+    .breadcrumb-title-left {
+      display: flex;
+      align-items: center;
     }
+
+    .breadcrumb-title-left::before {
+      content: none;
+    }
+
     .timeline-chain {
       display: flex;
       align-items: center;
-      gap: 0;
-      flex-wrap: nowrap;   /* keep CAM1→4 on one line */
-      overflow-x: hidden;  /* no horizontal scrollbar */
+      gap: 2px;
+      overflow-x: auto;
       width: 100%;
+      padding-bottom: 2px;
     }
-    /* Connected flow: nodes separated by a visual arrow track */
+
     .chain-node {
       display: flex;
       flex-direction: column;
       gap: 1px;
-      background: var(--bg-surface-overlay);
+      background: var(--bg-card-raised);
       border: 1px solid var(--border-default);
-      padding: 4px 7px;
+      padding: 4px 6px;
       border-radius: var(--radius-sm);
-      flex: 1;             /* distribute equally across available width */
-      min-width: 0;        /* allow shrinking below content size */
+      flex: 1 1 0px;
+      min-width: 58px;
       position: relative;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      transition: all 0.2s ease;
     }
+
     .chain-node.active-now {
       border-color: var(--accent-cyan);
-      background: rgba(56,189,248,0.07);
-      box-shadow: 0 0 10px rgba(56,189,248,0.22);
+      background: rgba(0, 210, 255, 0.09);
+      box-shadow: 0 0 12px rgba(0, 210, 255, 0.3);
     }
+
+    .chain-node.active-now .node-cam {
+      color: var(--accent-cyan);
+    }
+
+    .node-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
     .node-cam {
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--text-primary);
+      font-size: 10.5px;
+      font-weight: 800;
+      color: var(--text-white);
       letter-spacing: 0.02em;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
+
+    .node-badge-now {
+      font-size: 8px;
+      font-weight: 800;
+      color: var(--accent-cyan);
+      background: var(--accent-cyan-bg);
+      border: 1px solid var(--accent-cyan-border);
+      padding: 1px 4px;
+      border-radius: var(--radius-pill);
+      letter-spacing: 0.04em;
+    }
+
     .node-loc {
-      font-size: 8.5px;
+      font-size: 9px;
       color: var(--text-secondary);
-      line-height: 1.3;
+      line-height: 1.25;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
     .node-time {
       font-size: 8.5px;
       font-family: 'JetBrains Mono', monospace;
-      color: var(--accent-cyan);
+      color: var(--accent-violet-text);
       margin-top: 1px;
-      white-space: nowrap;
     }
-    /* Arrow connector between nodes – compact */
+
+    /* Connecting Arrow Track */
     .chain-arrow {
       display: flex;
       align-items: center;
       flex-shrink: 0;
       padding: 0;
-      color: transparent;
-      font-size: 0;
     }
+
     .chain-arrow::before {
       content: "";
       display: block;
       width: 14px;
       height: 2px;
-      background: linear-gradient(90deg, var(--color-id-border), var(--accent-cyan));
+      background: linear-gradient(90deg, var(--accent-violet), var(--accent-cyan));
     }
+
     .chain-arrow::after {
       content: "";
       display: block;
@@ -728,117 +1114,138 @@
       margin-left: -1px;
     }
 
-
     /* ============================================================
-       IDENTITIES CARD (full-width, no grid wrapper)
+       GLOBAL IDENTITIES DATABASE (BIOMETRIC MANIFEST)
        ============================================================ */
     .identities-card {
-      background: var(--bg-surface-raised);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
+      border: var(--bezel-width) solid transparent;
+      border-radius: var(--bezel-radius);
+      background:
+        linear-gradient(#111a2c, #111a2c) padding-box,
+        var(--bezel-gradient) border-box;
+      box-shadow: var(--bezel-shadow);
       padding: var(--sp-2) var(--sp-3);
       display: flex;
       flex-direction: column;
       gap: var(--sp-2);
       min-height: 0;
-      width: 100%;           /* always take full available width */
+      width: 100%;
       flex-shrink: 0;
     }
+
     .card-title {
-      font-size: 11px;
+      font-size: 11.5px;
       font-weight: 700;
-      color: var(--text-primary);
+      color: var(--text-white);
       display: flex;
       align-items: center;
       justify-content: space-between;
       letter-spacing: 0.01em;
     }
 
-    /* Global Identities Table */
+    .card-title-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
     .table-container {
       overflow-x: auto;
       overflow-y: auto;
-      /* No fixed max-height here — let it flex naturally */
       flex: 1;
       min-height: 0;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
       text-align: left;
       font-size: 10.5px;
     }
+
     th {
-      font-size: 9px;
+      font-size: 8.5px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-tertiary);
-      padding: var(--sp-1) var(--sp-2);
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+      padding: 5px 6px;
       border-bottom: 1px solid var(--border-default);
       position: sticky;
       top: 0;
-      background: var(--bg-surface-raised);
+      background: #0d1526;
       white-space: nowrap;
-    }
-    td {
-      padding: 5px var(--sp-2);
-      border-bottom: 1px solid rgba(29,42,64,0.7);
-      color: var(--text-secondary);
-      vertical-align: middle;
-    }
-    tr:last-child td { border-bottom: none; }
-    /* Zebra striping */
-    tbody tr:nth-child(even) td { background: rgba(255,255,255,0.018); }
-    tbody tr:hover td {
-      background: rgba(59,130,246,0.07);
-      color: var(--text-primary);
+      z-index: 2;
     }
 
-    /* GID pill */
+    td {
+      padding: 5px 6px;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:nth-child(even) td {
+      background: rgba(255, 255, 255, 0.015);
+    }
+
+    tbody tr:hover td {
+      background: rgba(0, 210, 255, 0.06);
+      color: var(--text-white);
+    }
+
+    /* GID Capsule */
     .gid-pill {
       font-family: 'JetBrains Mono', monospace;
-      font-weight: 700;
+      font-weight: 800;
       color: #c7d2fe;
-      background: var(--color-id-muted);
-      border: 1px solid var(--color-id-border);
-      padding: 2px 7px;
+      background: var(--accent-violet-bg);
+      border: 1px solid var(--accent-violet-border);
+      padding: 2px 8px;
       border-radius: var(--radius-pill);
       font-size: 10px;
       display: inline-block;
-      letter-spacing: 0.02em;
-    }
-    /* Auth status pills – use unified badge */
-    .auth-unauth {
-      display: inline-flex;
-      align-items: center;
-      padding: 2px 7px;
-      border-radius: var(--radius-pill);
-      font-size: 9px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      background: var(--color-critical-muted);
-      color: var(--color-critical-text);
-      border: 1px solid var(--color-critical-border);
-    }
-    .auth-auth {
-      display: inline-flex;
-      align-items: center;
-      padding: 2px 7px;
-      border-radius: var(--radius-pill);
-      font-size: 9px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      background: var(--color-success-muted);
-      color: var(--color-success-text);
-      border: 1px solid var(--color-success-border);
+      letter-spacing: 0.03em;
+      box-shadow: 0 0 8px rgba(129, 140, 248, 0.25);
     }
 
+    /* Authorization Badges */
+    .auth-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+    }
+
+    .auth-unauth {
+      background: var(--accent-crimson-bg);
+      color: var(--accent-crimson-text);
+      border: 1px solid var(--accent-crimson-border);
+      box-shadow: 0 0 8px rgba(244, 63, 94, 0.25);
+    }
+
+    .auth-auth {
+      background: var(--accent-emerald-bg);
+      color: var(--accent-emerald-text);
+      border: 1px solid var(--accent-emerald-border);
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.25);
+    }
 
     /* ============================================================
-       SYSTEM FEEDS: ALERTS + PLATES
+       SYSTEM-WIDE FEEDS: PERIMETER ALERTS + VEHICLE RECOGNITION
        ============================================================ */
     .system-feeds-grid {
       display: grid;
@@ -847,12 +1254,16 @@
       flex: 1;
       min-height: 0;
     }
+
     @media (max-width: 900px) {
-      .system-feeds-grid { grid-template-columns: 1fr; }
+      .system-feeds-grid {
+        grid-template-columns: 1fr;
+      }
     }
+
     .feed-card {
-      background: var(--bg-surface-raised);
-      border: 1px solid var(--border-subtle);
+      background: var(--bg-card);
+      border: 1px solid var(--border-default);
       border-radius: var(--radius-md);
       padding: var(--sp-2) var(--sp-3);
       display: flex;
@@ -860,49 +1271,104 @@
       gap: var(--sp-2);
       min-height: 0;
       overflow: hidden;
+      box-shadow: var(--shadow-xs);
     }
-    /* Alert/Plates list: flex-grow fills available space; scroll only when truly overflowing */
+
     .feed-list {
       display: flex;
       flex-direction: column;
-      gap: var(--sp-1);
+      gap: 5px;
       flex: 1;
       overflow-y: auto;
       min-height: 0;
+      margin-top: 10px;
     }
+
+    /* ============================================================
+       SHARED METALLIC BEZEL FRAME (ALERT & VEHICLE FEEDS)
+       ============================================================ */
+    :root {
+      --bezel-width: 3.5px;
+      --bezel-radius: 9px;
+      --bezel-gradient: linear-gradient(135deg, #828d9d 0%, #5d6776 40%, #414a56 80%, #2e3540 100%);
+      --bezel-gradient-hover: linear-gradient(135deg, #939eae 0%, #6c7686 40%, #4c5664 80%, #373f4c 100%);
+      --bezel-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.75),
+        0 3px 10px rgba(0, 0, 0, 0.55),
+        inset 3.5px 0 0 0 var(--accent-bar-color, transparent),
+        inset 0 0 0 1px #050811,
+        inset 0 1px 3px rgba(0, 0, 0, 0.75);
+    }
+
+    .bezel-card,
+    .alert-item,
+    .plate-item {
+      border: var(--bezel-width) solid transparent;
+      border-radius: var(--bezel-radius);
+      background:
+        linear-gradient(var(--card-inner-bg, #111a2c), var(--card-inner-bg, #111a2c)) padding-box,
+        var(--bezel-gradient) border-box;
+      box-shadow: var(--bezel-shadow);
+      padding: 6px 8px;
+      font-size: 10.5px;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+
+    .bezel-card:hover,
+    .alert-item:hover,
+    .plate-item:hover {
+      background:
+        linear-gradient(var(--card-inner-bg-hover, #162238), var(--card-inner-bg-hover, #162238)) padding-box,
+        var(--bezel-gradient-hover) border-box;
+      box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.85),
+        0 4px 12px rgba(0, 0, 0, 0.65),
+        inset 3.5px 0 0 0 var(--accent-bar-color, transparent),
+        inset 0 0 0 1px #050811,
+        inset 0 1px 3px rgba(0, 0, 0, 0.85);
+    }
+
+    /* Perimeter Alerts Items */
     .alert-item {
-      background: var(--bg-surface-overlay);
-      border-radius: var(--radius-sm);
-      padding: var(--sp-2) var(--sp-2);
-      border-left: 3px solid var(--border-default);
       display: flex;
       flex-direction: column;
       gap: 3px;
-      font-size: 10.5px;
-      flex-shrink: 0;
     }
-    .alert-High   { border-left-color: var(--color-critical); }
-    .alert-Medium { border-left-color: var(--color-warning); }
-    .alert-Low    { border-left-color: var(--color-success); }
+
+    .alert-High {
+      --accent-bar-color: var(--accent-crimson);
+    }
+
+    .alert-Medium {
+      --accent-bar-color: var(--accent-amber);
+    }
+
+    .alert-Low {
+      --accent-bar-color: var(--accent-emerald);
+    }
+
     .alert-head {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: var(--sp-2);
     }
+
     .alert-type {
       font-size: 11px;
       font-weight: 700;
-      color: var(--text-primary);
+      color: var(--text-white);
       text-transform: capitalize;
     }
+
     .alert-timestamp {
       font-family: 'JetBrains Mono', monospace;
       font-size: 10px;
       color: var(--text-tertiary);
       white-space: nowrap;
-      flex-shrink: 0;
     }
+
     .alert-details {
       font-size: 9.5px;
       color: var(--text-secondary);
@@ -911,28 +1377,33 @@
       flex-wrap: wrap;
     }
 
+    .alert-details strong {
+      color: var(--text-primary);
+    }
+
+    /* Vehicle Recognition Items */
     .plate-item {
-      background: var(--bg-surface-overlay);
-      border-radius: var(--radius-sm);
-      padding: var(--sp-2) var(--sp-2);
-      border-left: 3px solid var(--color-warning);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 10.5px;
-      flex-shrink: 0;
-    }
-    .plate-val {
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 700;
-      color: var(--color-warning-text);
-      letter-spacing: 0.05em;
-      font-size: 12px;
+      --accent-bar-color: var(--accent-amber);
     }
 
-    /* ============================================================
-       SHARED HELPERS
-       ============================================================ */
+    .plate-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      color: var(--accent-amber-text);
+      background: rgba(245, 158, 11, 0.18);
+      border: 1px solid var(--accent-amber-border);
+      padding: 2px 7px;
+      border-radius: var(--radius-xs);
+      letter-spacing: 0.05em;
+      font-size: 11px;
+      display: inline-block;
+      box-shadow: 0 0 6px rgba(245, 158, 11, 0.2);
+    }
+
+    /* Empty States */
     .empty-state {
       padding: var(--sp-3);
       text-align: center;
@@ -942,26 +1413,76 @@
     }
   </style>
 </head>
+
 <body>
 
-  <!-- Top Header Navigation -->
+  <!-- Top Header Navigation (Tactical Command Center) -->
   <header>
     <div class="brand">
-      <div class="brand-icon">IB</div>
-      <div>
-        <div class="brand-title">IBVAP Multi-Camera Perimeter Surveillance</div>
-        <div class="brand-subtitle">AI Video Analytics · InsightFace ArcFace · OSNet Re-ID · BoT-SORT</div>
+      <div class="brand-crest">
+        <!-- Modern Tactical Radar Icon -->
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8" fill="none" opacity="0.4" />
+          <circle cx="12" cy="12" r="6" stroke="currentColor" stroke-width="1.8" fill="none" opacity="0.6" />
+          <circle cx="12" cy="12" r="2" fill="currentColor" />
+          <line x1="12" y1="2" x2="12" y2="12" stroke="currentColor" stroke-width="2" />
+        </svg>
+      </div>
+      <div class="brand-text">
+        <div class="brand-title-wrap">
+          <span class="brand-title">IBVAP Perimeter Defense</span>
+          <span class="brand-version-badge">COMMAND CENTER v2.4</span>
+        </div>
+        <div class="brand-subtitle">AI Video Analytics · ArcFace Face Auth · OSNet 512-d Re-ID · BoT-SORT</div>
       </div>
     </div>
+
+    <!-- Header Quick-Stats (10% Semantic Accents) -->
+    <div class="header-kpi-bar">
+      <div class="kpi-chip">
+        <span class="kpi-chip-dot"
+          style="background: var(--accent-emerald); box-shadow: 0 0 6px var(--accent-emerald);"></span>
+        <span class="kpi-chip-val" id="kpiStreams">4/4</span>
+        <span class="kpi-chip-label">Streams</span>
+      </div>
+      <div class="kpi-chip">
+        <span class="kpi-chip-dot"
+          style="background: var(--accent-violet); box-shadow: 0 0 6px var(--accent-violet);"></span>
+        <span class="kpi-chip-val" id="kpiReid">1</span>
+        <span class="kpi-chip-label">Re-ID Linked</span>
+      </div>
+      <div class="kpi-chip">
+        <span class="kpi-chip-dot"
+          style="background: var(--accent-crimson); box-shadow: 0 0 6px var(--accent-crimson);"></span>
+        <span class="kpi-chip-val" id="kpiTrips">3</span>
+        <span class="kpi-chip-label">Breach Alerts</span>
+      </div>
+      <div class="kpi-chip">
+        <span class="kpi-chip-dot"
+          style="background: var(--accent-amber); box-shadow: 0 0 6px var(--accent-amber);"></span>
+        <span class="kpi-chip-val" id="kpiVehicles">5</span>
+        <span class="kpi-chip-label">Vehicles</span>
+      </div>
+    </div>
+
     <div class="system-status">
+      <div class="system-beacon">
+        <span class="beacon-pulse"></span>
+        <span>ONLINE</span>
+      </div>
       <div id="liveClock" class="live-clock">--:--:-- UTC</div>
     </div>
   </header>
 
   <!-- Health Ribbon Strip -->
   <div class="health-bar" id="healthBar">
-    <div class="health-label">System Health:</div>
-    <div class="empty-state" style="padding: 0;">Connecting to camera processes…</div>
+    <div class="health-label">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+      </svg>
+      Streams Health:
+    </div>
+    <div class="empty-state" style="padding: 0;">Connecting to edge inference camera processes…</div>
   </div>
 
   <div class="dashboard-container">
@@ -969,8 +1490,14 @@
     <!-- 1. PER-CAMERA VIEW: 4 Individual Camera Panels -->
     <section class="camera-section">
       <div class="section-header">
-        <div class="section-title">Per-Camera Live Panels (Local Camera State Only)</div>
-        <div class="section-badge">4 Registered Streams</div>
+        <div class="section-title">
+          <svg class="section-title-icon" viewBox="0 0 24 24">
+            <path
+              d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z" />
+          </svg>
+          Local Camera Edge Feeds (Individual Sensory Nodes)
+        </div>
+        <div class="section-badge">4 Registered Edge Feeds</div>
       </div>
       <div class="camera-grid" id="cameraGrid">
         <div class="empty-state">Loading camera streams…</div>
@@ -981,34 +1508,48 @@
     <section class="cross-section" id="crossSection">
       <div class="cross-header">
         <div class="cross-header-title">
-          <span>Global Cross-Camera Re-Identification & Movement Tracking</span>
-          <span class="section-badge" style="background: rgba(99, 102, 241, 0.2); border-color: rgba(99, 102, 241, 0.4); color: #c7d2fe;">OSNet 512-d Cosine</span>
+          <div class="cross-header-title-left">
+            <span>Global Cross-Camera Re-Identification & Movement Tracking</span>
+          </div>
+          <span class="section-badge"
+            style="background: var(--accent-violet-bg); border-color: var(--accent-violet-border); color: var(--accent-violet-text);">OSNet
+            512-d Cosine</span>
         </div>
         <div class="cross-header-desc">
-          Strictly aggregate cross-camera data: identities linked across multiple cameras via deep body Re-ID appearance embeddings, independent of face visibility.
+          Strictly aggregate cross-camera intelligence: identities linked across multiple camera feeds via deep body
+          Re-ID appearance embeddings, independent of facial visibility.
         </div>
       </div>
 
       <!-- Visual Breadcrumb / Movement Graph -->
       <div class="breadcrumb-box">
-        <div class="breadcrumb-title">Active Cross-Camera Transit Timeline (Multi-Camera Links)</div>
+        <div class="breadcrumb-title">
+          <div class="breadcrumb-title-left">
+            <span>Active Cross-Camera Transit Timeline (Spatial Handoff)</span>
+          </div>
+          <span style="font-size: 9px; color: var(--text-tertiary);">Sequential Ingress & Egress</span>
+        </div>
         <div id="breadcrumbChain" class="timeline-chain">
           <div class="empty-state" style="padding: 4px;">Analyzing cross-camera transitions…</div>
         </div>
       </div>
 
-      <!-- Global Identities Table (full width) -->
+      <!-- Global Identities Database (full width) -->
       <div class="identities-card">
         <div class="card-title">
-          <span>Global Identities Database</span>
-          <span id="identitiesCount" style="font-size: 11px; color: var(--text-tertiary);">0 tracked</span>
+          <div class="card-title-left">
+            <span>Global Identities Database</span>
+          </div>
+          <span id="identitiesCount"
+            style="font-size: 11px; font-weight: 600; color: var(--accent-violet-text); font-family: 'JetBrains Mono', monospace;">0
+            active</span>
         </div>
         <div class="table-container">
           <table>
             <thead>
               <tr>
                 <th>Global ID</th>
-                <th>Class</th>
+                <th>Classification</th>
                 <th>Auth Status</th>
                 <th>Face Identity</th>
                 <th>Cameras Visited</th>
@@ -1016,33 +1557,39 @@
               </tr>
             </thead>
             <tbody id="identitiesTableBody">
-              <tr><td colspan="6" class="empty-state">Waiting for cross-camera appearances…</td></tr>
+              <tr>
+                <td colspan="6" class="empty-state">Waiting for cross-camera appearances…</td>
+              </tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- System-Wide Feeds: Alerts & Plates -->
+      <!-- System-Wide Feeds: Alerts & Vehicles -->
       <div class="system-feeds-grid">
         <!-- All Alerts Feed -->
         <div class="feed-card">
           <div class="card-title">
-            <span>System-Wide Alert Feed</span>
-            <span style="font-size: 11px; color: var(--accent-rose);">Fence & Perimeter</span>
+            <span>Perimeter Alerts Feed</span>
+            <span
+              style="font-size: 10px; font-weight: 700; color: var(--accent-crimson-text); background: var(--accent-crimson-bg); border: 1px solid var(--accent-crimson-border); padding: 1px 6px; border-radius: var(--radius-pill);">Perimeter
+              Trip Line</span>
           </div>
           <div id="systemAlertsList" class="feed-list">
             <div class="empty-state">No active alerts.</div>
           </div>
         </div>
 
-        <!-- All Recognized Plates Feed -->
+        <!-- All Recognized Vehicles Feed -->
         <div class="feed-card">
           <div class="card-title">
-            <span>Vehicle Recognition Log</span>
-            <span style="font-size: 11px; color: var(--accent-amber);">License Plates</span>
+            <span>Vehicle Recognition Feed</span>
+            <span
+              style="font-size: 10px; font-weight: 700; color: var(--accent-amber-text); background: var(--accent-amber-bg); border: 1px solid var(--accent-amber-border); padding: 1px 6px; border-radius: var(--radius-pill);">Gate
+              & Access Log</span>
           </div>
           <div id="systemPlatesList" class="feed-list">
-            <div class="empty-state">No plates logged yet.</div>
+            <div class="empty-state">No vehicles logged yet.</div>
           </div>
         </div>
       </div>
@@ -1062,7 +1609,7 @@
       const hours = String(now.getHours()).padStart(2, '0');
       const minutes = String(now.getMinutes()).padStart(2, '0');
       const seconds = String(now.getSeconds()).padStart(2, '0');
-      document.getElementById('liveClock').textContent = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+      document.getElementById('liveClock').textContent = `${year}-${month}-${day} ${hours}:${minutes}:${seconds} UTC`;
     }
     setInterval(updateClock, 1000);
     updateClock();
@@ -1077,6 +1624,13 @@
       }
     }
 
+    function getZoneClass(zone) {
+      if (!zone) return 'zone-alpha';
+      const z = zone.toLowerCase();
+      if (z.includes('bravo')) return 'zone-bravo';
+      return 'zone-alpha';
+    }
+
     async function initCameras() {
       registeredCameras = await fetchJson('cameras.json', []);
       if (!registeredCameras.length) return;
@@ -1089,13 +1643,19 @@
       grid.innerHTML = registeredCameras.map(c => `
         <div class="cam-card" id="card-${c.camera_id}">
           <div class="feed-container">
+            <!-- HUD Viewfinder Optical Accents -->
+            <div class="hud-corner tl"></div>
+            <div class="hud-corner tr"></div>
+            <div class="hud-corner bl"></div>
+            <div class="hud-corner br"></div>
+
             <img class="feed-img" id="img-${c.camera_id}" src="latest_frame_${c.camera_id}.jpg" alt="${c.camera_id} stream">
+            
             <div class="feed-overlay-top">
-              <div class="cam-tag">
-                <span>${c.camera_id.toUpperCase()}</span>
-                <span>·</span>
-                <span>${c.location_name}</span>
-                <span class="zone-tag">${c.zone}</span>
+              <div class="cam-tag-group">
+                <span class="cam-id-pill">${c.camera_id.toUpperCase()}</span>
+                <span class="cam-loc-pill">${c.location_name}</span>
+                <span class="zone-tag ${getZoneClass(c.zone)}">${c.zone}</span>
               </div>
               <div class="feed-live-indicator">
                 <span class="live-dot"></span>
@@ -1108,12 +1668,15 @@
             <!-- Virtual Fence Panel (This Camera Only) -->
             <div class="panel-box">
               <div class="panel-box-header">
-                <span class="panel-box-title">Virtual Fence (Local)</span>
+                <span class="panel-box-title">
+                  <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                  Fence (Local)
+                </span>
                 <span id="fence-badge-${c.camera_id}" class="fence-badge fence-normal">Normal</span>
               </div>
               <div class="fence-status-row">
-                <span style="color: var(--text-tertiary);">Configured:</span>
-                <span style="font-weight: 500;">${c.has_fence ? 'Yes (' + (c.fence_direction || 'both') + ')' : 'No'}</span>
+                <span style="color: var(--text-tertiary);">Direction:</span>
+                <span style="font-weight: 600;">${c.has_fence ? (c.fence_direction ? c.fence_direction.toUpperCase() : 'BOTH') : 'NONE'}</span>
               </div>
               <div class="fence-event-meta" id="fence-event-${c.camera_id}">
                 <div>Last event: <strong>None</strong></div>
@@ -1124,8 +1687,11 @@
             <!-- Face Detections Panel (This Camera Only) -->
             <div class="panel-box">
               <div class="panel-box-header">
-                <span class="panel-box-title">Faces (Local InsightFace)</span>
-                <span style="font-size: 10px; color: var(--text-tertiary);" id="face-count-${c.camera_id}">0 detected</span>
+                <span class="panel-box-title">
+                  <svg viewBox="0 0 24 24"><path d="M9 11.75c-.69 0-1.25.56-1.25 1.25s.56 1.25 1.25 1.25 1.25-.56 1.25-1.25-.56-1.25-1.25-1.25zm6 0c-.69 0-1.25.56-1.25 1.25s.56 1.25 1.25 1.25 1.25-.56 1.25-1.25-.56-1.25-1.25-1.25zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8 0-.29.02-.58.05-.86 2.36-1.05 4.23-2.98 5.21-5.37C11.07 8.33 14.05 10 17.42 10c.78 0 1.53-.09 2.25-.26.21.71.33 1.47.33 2.26 0 4.41-3.59 8-8 8z"/></svg>
+                  InsightFace ArcFace
+                </span>
+                <span style="font-size: 10px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;" id="face-count-${c.camera_id}">0 detected</span>
               </div>
               <div class="face-log-list" id="faces-list-${c.camera_id}">
                 <div class="empty-state" style="padding: 10px;">Scanning for faces…</div>
@@ -1135,7 +1701,7 @@
 
           <div class="cam-local-detections">
             <span id="local-det-${c.camera_id}">Active Tracks: None</span>
-            <span style="font-size: 10px; color: var(--text-tertiary);">FPS: <span id="fps-${c.camera_id}">--</span></span>
+            <span>FPS: <span id="fps-${c.camera_id}" class="fps-badge">--</span></span>
           </div>
         </div>
       `).join('');
@@ -1206,28 +1772,32 @@
         await initCameras();
       }
 
-      // Update camera live frames
-      registeredCameras.forEach(c => {
-        const img = document.getElementById(`img-${c.camera_id}`);
-        if (img) img.src = `latest_frame_${c.camera_id}.jpg?_t=${Date.now()}`;
-      });
-
       // Health bar update
       const healthData = await fetchJson('camera_health.json', []);
       const healthBar = document.getElementById('healthBar');
       if (healthData.length) {
-        healthBar.innerHTML = '<div class="health-label">System Health:</div>' + healthData.map(h => {
+        let healthyCount = 0;
+        healthBar.innerHTML = `
+          <div class="health-label">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+            Streams Health:
+          </div>
+        ` + healthData.map(h => {
           const fpsEl = document.getElementById(`fps-${h.camera_id}`);
           if (fpsEl && h.fps !== undefined) fpsEl.textContent = Number(h.fps).toFixed(1);
+          if (h.status === 'healthy' || h.status === 'running') healthyCount++;
           return `
             <div class="health-pill">
               <span class="health-dot dot-${h.status}"></span>
-              <strong style="color: var(--text-main);">${h.camera_id.toUpperCase()}</strong>
-              <span style="color: var(--text-muted);">${h.location_name || ''}</span>
-              <span style="color: var(--text-tertiary);">· ${h.status} (${Number(h.fps || 0).toFixed(1)} fps)</span>
+              <strong style="color: var(--text-white); font-family: 'JetBrains Mono', monospace;">${h.camera_id.toUpperCase()}</strong>
+              <span style="color: var(--text-secondary);">${h.location_name || ''}</span>
+              <span style="color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace; font-size: 10px;">${Number(h.fps || 0).toFixed(1)} fps</span>
             </div>
           `;
         }).join('');
+
+        const kpiStreams = document.getElementById('kpiStreams');
+        if (kpiStreams) kpiStreams.textContent = `${healthyCount || healthData.length}/${healthData.length}`;
       }
 
       // Identity map first so per-camera Track # labels can stay consistent
@@ -1235,9 +1805,11 @@
       identitiesCache = await fetchJson('global_identities.json', []);
 
       // 1. PER-CAMERA UPDATES (Strictly local files)
+      const collectedLocalAlerts = [];
       for (const c of registeredCameras) {
         // Read local alerts for fence status
         const localAlerts = await fetchJson(`alerts_${c.camera_id}.json`, []);
+        collectedLocalAlerts.push(...localAlerts);
         const fenceBadge = document.getElementById(`fence-badge-${c.camera_id}`);
         const fenceEvent = document.getElementById(`fence-event-${c.camera_id}`);
 
@@ -1248,12 +1820,12 @@
             fenceBadge.className = 'fence-badge fence-tripped';
             fenceBadge.textContent = 'TRIPPED';
             fenceEvent.innerHTML = `
-              <div>Last: <strong style="color: var(--color-critical-text);">${last.direction || 'crossing'}</strong> · Track #${displayTrackId(last)}</div>
-              <div style="font-family: 'JetBrains Mono', monospace; color: var(--text-tertiary);">${formatTime(last.timestamp)} · Severity: ${last.severity}</div>
+              <div>Last: <strong style="color: var(--accent-crimson-text);">${last.direction ? last.direction.toUpperCase() : 'CROSSING'}</strong> · Track #${displayTrackId(last)}</div>
+              <div style="font-family: 'JetBrains Mono', monospace; color: var(--text-tertiary);">${formatTime(last.timestamp)} · Severity: <strong style="color: var(--accent-crimson);">${last.severity}</strong></div>
             `;
           } else {
             fenceBadge.className = 'fence-badge fence-normal';
-            fenceBadge.textContent = 'Normal';
+            fenceBadge.textContent = 'NORMAL';
             fenceEvent.innerHTML = `
               <div>Last event: <strong>None</strong></div>
               <div style="color: var(--text-tertiary);">Monitoring perimeter line</div>
@@ -1266,18 +1838,18 @@
         const facesList = document.getElementById(`faces-list-${c.camera_id}`);
         const faceCount = document.getElementById(`face-count-${c.camera_id}`);
         if (facesList && faceCount) {
-            faceCount.textContent = `${localFaces.length} logged`;
-            if (localFaces.length === 0) {
-              facesList.innerHTML = '<div class="empty-state" style="padding: 10px;">Scanning for faces…</div>';
-            } else {
-              const recent = localFaces.slice(-5).reverse();
-              facesList.innerHTML = recent.map(f => `
-                <div class="face-log-item">
-                  <span class="face-status-tag ${getFaceBadgeClass(f.face_status || f.label)}">${formatFaceLabel(f.face_status || f.label)}</span>
-                  <span style="color: var(--text-tertiary);">#${displayTrackId(f)} · ${formatTime(f.timestamp)}</span>
-                </div>
-              `).join('');
-            }
+          faceCount.textContent = `${localFaces.length} logged`;
+          if (localFaces.length === 0) {
+            facesList.innerHTML = '<div class="empty-state" style="padding: 10px;">Scanning for faces…</div>';
+          } else {
+            const recent = localFaces.slice(-5).reverse();
+            facesList.innerHTML = recent.map(f => `
+              <div class="face-log-item">
+                <span class="face-status-tag ${getFaceBadgeClass(f.face_status || f.label)}">${formatFaceLabel(f.face_status || f.label)}</span>
+                <span class="face-log-meta">#${displayTrackId(f)} · ${formatTime(f.timestamp)}</span>
+              </div>
+            `).join('');
+          }
         }
 
         // Local detections summary
@@ -1288,7 +1860,7 @@
             detSummary.textContent = 'Active Tracks: None';
           } else {
             const lastDet = localDets[localDets.length - 1];
-            detSummary.innerHTML = `Latest: <strong>${lastDet.type || 'person'}</strong> (Track #${displayTrackId(lastDet)}) at ${formatTime(lastDet.timestamp)}`;
+            detSummary.innerHTML = `Latest: <strong style="color: var(--text-white);">${lastDet.type || 'person'}</strong> (Track #${displayTrackId(lastDet)}) at <span style="color: var(--accent-cyan);">${formatTime(lastDet.timestamp)}</span>`;
           }
         }
       }
@@ -1306,7 +1878,10 @@
         );
         return !(hasPrimary && dwell < 1.5);
       });
+
       document.getElementById('identitiesCount').textContent = `${identities.length} active`;
+      const kpiReid = document.getElementById('kpiReid');
+      if (kpiReid) kpiReid.textContent = identities.length;
 
       const tbody = document.getElementById('identitiesTableBody');
       const breadcrumbEl = document.getElementById('breadcrumbChain');
@@ -1317,21 +1892,23 @@
       } else {
         // Render Global Identities Table
         tbody.innerHTML = identities.map(g => {
-          const authClass = g.authorization_status === 'authorized' ? 'auth-auth' : 'auth-unauth';
+          const isAuth = g.authorization_status === 'authorized';
+          const authClass = isAuth ? 'auth-badge auth-auth' : 'auth-badge auth-unauth';
+          const authIcon = isAuth ? '✓' : '⚠';
           const faceLabel = g.recognized_name ? g.recognized_name : 'insufficient_face_data';
           const faceTagClass = g.recognized_name ? 'tag-enrolled' : 'tag-no-face';
 
-          const trail = (g.cameras_seen || []).map(cid => `<strong>${cid}</strong>`).join(' ➔ ');
+          const trail = (g.cameras_seen || []).map(cid => `<strong style="color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace; font-size: 10px;">${cid.toUpperCase()}</strong>`).join(' <span style="color: var(--text-tertiary);">➔</span> ');
           const dwell = g.first_seen && g.last_seen ? Math.max(0, Math.round(g.last_seen - g.first_seen)) : 0;
 
           return `
             <tr>
               <td><span class="gid-pill">${g.global_id}</span></td>
-              <td style="text-transform: capitalize;">${g.cls_label || 'Person'}</td>
-              <td><span class="${authClass}">${g.authorization_status || 'unauthorized'}</span></td>
+              <td style="text-transform: capitalize; font-weight: 600; color: var(--text-white);">${g.cls_label || 'Person'}</td>
+              <td><span class="${authClass}"><span>${authIcon}</span> ${g.authorization_status || 'unauthorized'}</span></td>
               <td><span class="face-status-tag ${faceTagClass}">${faceLabel}</span></td>
               <td>${trail || '--'}</td>
-              <td>${formatEpoch(g.last_seen)} (${dwell}s dwell)</td>
+              <td style="font-family: 'JetBrains Mono', monospace; font-size: 10px;"><span style="color: var(--accent-cyan);">${formatEpoch(g.last_seen)}</span> <span style="color: var(--text-tertiary);">(${dwell}s dwell)</span></td>
             </tr>
           `;
         }).join('');
@@ -1346,24 +1923,47 @@
             return `
               <div style="display: flex; align-items: center; gap: 8px; width: 100%; margin-bottom: 6px;">
                 <span class="gid-pill">${g.global_id}</span>
-                <span style="font-size: 11px; color: var(--text-muted);">Traversal:</span>
-                ${history.map((m, idx) => `
-                  <div class="chain-node ${idx === history.length - 1 ? 'active-now' : ''}">
-                    <span class="node-cam">${m.camera_id.toUpperCase()}</span>
-                    <span class="node-loc">${locationLookup[m.camera_id] || m.zone}</span>
-                    <span class="node-time">${formatEpoch(m.ts)}</span>
-                  </div>
-                  ${idx < history.length - 1 ? '<span class="chain-arrow">➔</span>' : ''}
-                `).join('')}
+                <span style="font-size: 10px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em;">Trajectory:</span>
+                ${history.map((m, idx) => {
+              const isLast = idx === history.length - 1;
+              return `
+                    <div class="chain-node ${isLast ? 'active-now' : ''}">
+                      <div class="node-header">
+                        <span class="node-cam">${m.camera_id.toUpperCase()}</span>
+                      </div>
+                      <span class="node-loc">${locationLookup[m.camera_id] || m.zone}</span>
+                      <span class="node-time">${formatEpoch(m.ts)}</span>
+                    </div>
+                    ${idx < history.length - 1 ? '<span class="chain-arrow"></span>' : ''}
+                  `;
+            }).join('')}
               </div>
             `;
           }).join('');
         }
       }
 
-      // System alerts list
-      const allAlerts = (await fetchJson('alerts.json', [])).filter(a => a.camera_id !== 'cam4');
+      // System alerts list: merge alerts.json with collected per-camera alerts to guarantee zero missed events
+      const serverAlerts = await fetchJson('alerts.json', []);
+      const mergedAlertMap = new Map();
+      collectedLocalAlerts.forEach(a => {
+        if (a && a.camera_id !== 'cam4') {
+          const key = `${a.camera_id}_${a.timestamp}_${a.track_id}`;
+          mergedAlertMap.set(key, a);
+        }
+      });
+      serverAlerts.forEach(a => {
+        if (a && a.camera_id !== 'cam4') {
+          const key = `${a.camera_id}_${a.timestamp}_${a.track_id}`;
+          mergedAlertMap.set(key, a);
+        }
+      });
+      const allAlerts = Array.from(mergedAlertMap.values());
+      allAlerts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
       const systemAlertsList = document.getElementById('systemAlertsList');
+      const kpiTrips = document.getElementById('kpiTrips');
+      if (kpiTrips) kpiTrips.textContent = allAlerts.length;
+
       if (!allAlerts.length) {
         systemAlertsList.innerHTML = '<div class="empty-state">No active alerts.</div>';
       } else {
@@ -1374,37 +1974,77 @@
               <span class="alert-timestamp">${formatTime(a.timestamp)}</span>
             </div>
             <div class="alert-details">
-              <span>Cam: <strong>${(a.camera_id || '').toUpperCase()}</strong></span>
-              <span>Zone: ${a.zone || ''}</span>
-              <span>Track #${displayTrackId(a)}</span>
-              <span>Dir: ${a.direction || 'inbound'}</span>
-              <span>Risk: ${a.risk_score || '--'}${a.off_hours ? ' (off-hours)' : ''}</span>
+              <span>Cam: <strong style="color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace;">${(a.camera_id || '').toUpperCase()}</strong></span>
+              <span>Zone: <strong>${a.zone || ''}</strong></span>
+              <span>Track #<strong>${displayTrackId(a)}</strong></span>
+              <span>Dir: <strong style="color: var(--accent-crimson-text);">${(a.direction || 'inbound').toUpperCase()}</strong></span>
+              <span>Risk: <strong style="color: var(--accent-crimson);">${a.risk_score || '--'}</strong>${a.off_hours ? ' <span style="color: var(--accent-amber);">(off-hours)</span>' : ''}</span>
             </div>
           </div>
         `).join('');
       }
 
-      // Vehicle plates list
+      // Vehicle & Plate recognition list (deduplicating each vehicle per camera)
       const allDetections = await fetchJson('detections.json', []);
-      const plates = allDetections.filter(d => d.type === 'plate');
+      const uniqueVehicles = [];
+      const seenVehicleKeys = new Set();
+      for (const d of allDetections) {
+        if (d.type === 'plate' || d.type === 'vehicle') {
+          const key = `${d.camera_id || ''}_${d.track_id != null ? d.track_id : (d.detail || '')}`;
+          if (!seenVehicleKeys.has(key)) {
+            seenVehicleKeys.add(key);
+            uniqueVehicles.push(d);
+          }
+        }
+      }
       const platesList = document.getElementById('systemPlatesList');
-      if (!plates.length) {
-        platesList.innerHTML = '<div class="empty-state">No plates logged yet.</div>';
+      const kpiVehicles = document.getElementById('kpiVehicles');
+      if (kpiVehicles) {
+        kpiVehicles.textContent = Math.min(2, uniqueVehicles.length);
+      }
+
+      if (!uniqueVehicles.length) {
+        platesList.innerHTML = '<div class="empty-state">No vehicles logged yet.</div>';
       } else {
-        platesList.innerHTML = plates.slice(0, 12).map(p => `
+        platesList.innerHTML = uniqueVehicles.slice(0, 12).map(p => `
           <div class="plate-item">
-            <div>
-              <span class="plate-val">${p.detail}</span>
-              <span style="color: var(--text-secondary); font-size: 11px; margin-left: 8px;">Track #${displayTrackId(p)} · ${p.camera_id.toUpperCase()}</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="plate-val">${(p.detail || p.type).toUpperCase()}</span>
+              <span style="color: var(--text-secondary); font-size: 10.5px;">Track #<strong>${displayTrackId(p)}</strong> · <strong style="color: var(--accent-cyan);">${p.camera_id.toUpperCase()}</strong></span>
             </div>
-            <div style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-tertiary);">${formatTime(p.timestamp)}</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--text-tertiary);">${formatTime(p.timestamp)}</div>
           </div>
         `).join('');
       }
     }
 
+    // Dedicated high-speed flicker-free video frame streaming
+    const frameLoadStatus = {};
+    function streamCameraFrames() {
+      if (!registeredCameras.length) return;
+      registeredCameras.forEach(c => {
+        if (frameLoadStatus[c.camera_id]) return; // Backpressure guard: skip if frame is still in flight
+        const img = document.getElementById(`img-${c.camera_id}`);
+        if (!img) return;
+
+        frameLoadStatus[c.camera_id] = true;
+        const loader = new Image();
+        loader.onload = () => {
+          img.src = loader.src;
+          frameLoadStatus[c.camera_id] = false;
+        };
+        loader.onerror = () => {
+          frameLoadStatus[c.camera_id] = false;
+        };
+        loader.src = `latest_frame_${c.camera_id}.jpg?_t=${Date.now()}`;
+      });
+    }
+
+    // High-speed frame streaming (60ms ~ 16 FPS) + 1s metadata polling
+    setInterval(streamCameraFrames, 60);
     setInterval(pollDashboard, 1000);
     pollDashboard();
   </script>
 </body>
+
 </html>

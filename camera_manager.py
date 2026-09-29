@@ -68,44 +68,83 @@ def save_json(path, data):
             time.sleep(SAVE_JSON_RETRY_DELAY_SEC)
 
 
+def do_merge(registry):
+    from pipeline import cam_path, health_path  # local import: only merger needs these
+    merged_alerts, merged_detections, merged_health, merged_faces = [], [], [], []
+    for cam in registry:
+        cid = cam["camera_id"]
+        merged_alerts.extend(
+            a for a in load_json(cam_path(cid, "alerts"), [])
+            if not cam.get("vehicle_only")
+        )
+        merged_detections.extend(load_json(cam_path(cid, "detections"), []))
+        merged_faces.extend(load_json(cam_path(cid, "faces"), []))
+
+        h = load_json(health_path(cid), None)
+        if h is None:
+            merged_health.append({"camera_id": cid, "status": "starting", "fps": 0, "last_update": None})
+            continue
+        if h["status"] not in ("stream_ended", "stream_ended_looping") and \
+                time.time() - h["last_update"] > 15:
+            h = {**h, "status": "offline"}
+        h["location_name"] = cam["location_name"]
+        h["zone"] = cam["zone"]
+        merged_health.append(h)
+
+    merged_alerts.sort(key=lambda a: a["timestamp"], reverse=True)
+    merged_detections.sort(key=lambda d: d["timestamp"], reverse=True)
+    merged_faces.sort(key=lambda d: d["timestamp"], reverse=True)
+    # Deduplicate vehicle entries by (camera_id, track_id) so vehicles aren't reput repeatedly
+    seen_veh = set()
+    deduped_detections = []
+    for d in merged_detections:
+        if d.get("type") in ("vehicle", "plate"):
+            v_key = (d.get("camera_id"), d.get("track_id", d.get("detail")))
+            if v_key in seen_veh:
+                continue
+            seen_veh.add(v_key)
+        deduped_detections.append(d)
+    save_json(os.path.join(WEB_DIR, "alerts.json"), merged_alerts[:50])
+    save_json(os.path.join(WEB_DIR, "detections.json"), deduped_detections[:30])
+    save_json(os.path.join(WEB_DIR, "faces.json"), merged_faces[:40])
+    save_json(os.path.join(WEB_DIR, "camera_health.json"), merged_health)
+
+
 def run_merger(registry):
     """Combines every camera's per-camera files into the merged files the
     dashboard actually polls, and turns each camera's heartbeat timestamp
     into a live status (Step 6) — including flagging a camera as `offline`
     if its heartbeat has simply gone silent, distinct from a demo clip that
     ended on purpose (`stream_ended` / `stream_ended_looping`)."""
-    from pipeline import cam_path, health_path  # local import: only merger needs these
-
     while True:
-        merged_alerts, merged_detections, merged_health, merged_faces = [], [], [], []
-        for cam in registry:
-            cid = cam["camera_id"]
-            merged_alerts.extend(
-                a for a in load_json(cam_path(cid, "alerts"), [])
-                if not cam.get("vehicle_only")
-            )
-            merged_detections.extend(load_json(cam_path(cid, "detections"), []))
-            merged_faces.extend(load_json(cam_path(cid, "faces"), []))
-
-            h = load_json(health_path(cid), None)
-            if h is None:
-                merged_health.append({"camera_id": cid, "status": "starting", "fps": 0, "last_update": None})
-                continue
-            if h["status"] not in ("stream_ended", "stream_ended_looping") and \
-                    time.time() - h["last_update"] > 15:
-                h = {**h, "status": "offline"}
-            h["location_name"] = cam["location_name"]
-            h["zone"] = cam["zone"]
-            merged_health.append(h)
-
-        merged_alerts.sort(key=lambda a: a["timestamp"], reverse=True)
-        merged_detections.sort(key=lambda d: d["timestamp"], reverse=True)
-        merged_faces.sort(key=lambda d: d["timestamp"], reverse=True)
-        save_json(os.path.join(WEB_DIR, "alerts.json"), merged_alerts[:50])
-        save_json(os.path.join(WEB_DIR, "detections.json"), merged_detections[:30])
-        save_json(os.path.join(WEB_DIR, "faces.json"), merged_faces[:40])
-        save_json(os.path.join(WEB_DIR, "camera_health.json"), merged_health)
+        do_merge(registry)
         time.sleep(MERGE_INTERVAL_SEC)
+
+
+def init_standby_frames(registry, config):
+    """Initializes clean standby frames for all cameras with fence lines
+    and without any bounding boxes, so the dashboard looks clean before demo starts and after it stops."""
+    fences = config.get("fences", {})
+    for cam in registry:
+        cid = cam["camera_id"]
+        source = cam.get("source")
+        if not source:
+            continue
+        src_path = os.path.join(BASE_DIR, source) if not os.path.isabs(source) else source
+        if not os.path.exists(src_path):
+            continue
+        try:
+            import cv2
+            cap = cv2.VideoCapture(src_path)
+            ret, frame = cap.read()
+            cap.release()
+            if ret:
+                fence = fences.get(cid)
+                if fence:
+                    cv2.line(frame, tuple(fence[0]), tuple(fence[1]), (0, 0, 255), 2)
+                cv2.imwrite(os.path.join(WEB_DIR, f"latest_frame_{cid}.jpg"), frame)
+        except Exception:
+            pass
 
 
 def run_sync_coordinator(camera_ids, start_event, frame_counter, frame_cond, report_queue, stop_event, target_fps=25.0, loop=False):
@@ -215,7 +254,7 @@ def main():
     # Fresh run = fresh dashboard.
     open(REID_EVENTS_PATH, "w").close()
     for f in os.listdir(WEB_DIR):
-        if f.startswith(("latest_frame_", "alerts_", "detections_", "health_", "faces_")):
+        if f.startswith(("alerts_", "detections_", "health_", "faces_")):
             try:
                 os.remove(os.path.join(WEB_DIR, f))
             except OSError:
@@ -227,6 +266,7 @@ def main():
                 os.remove(path)
             except OSError:
                 pass
+    init_standby_frames(registry, config)
 
     fences = config.get("fences", {})
     enriched_registry = []
@@ -300,6 +340,8 @@ def main():
                 p.terminate()
         for p in camera_procs + support_procs:
             p.join(timeout=5)
+        do_merge(registry)
+        init_standby_frames(registry, config)
 
 
 if __name__ == "__main__":

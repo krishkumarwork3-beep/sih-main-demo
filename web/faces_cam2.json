@@ -2,7 +2,7 @@
   {
     "camera_id": "cam2",
     "zone": "Zone Alpha",
-    "timestamp": "2026-09-27T10:13:26",
+    "timestamp": "2026-09-29T23:50:48",
     "track_id": 1,
     "face_status": "insufficient_face_data",
     "label": "insufficient_face_data",
@@ -11,7 +11,7 @@
   {
     "camera_id": "cam2",
     "zone": "Zone Alpha",
-    "timestamp": "2026-09-27T10:13:28",
+    "timestamp": "2026-09-29T23:50:50",
     "track_id": 1,
     "face_status": "insufficient_face_data",
     "label": "insufficient_face_data",
@@ -20,7 +20,7 @@
   {
     "camera_id": "cam2",
     "zone": "Zone Alpha",
-    "timestamp": "2026-09-27T10:13:31",
+    "timestamp": "2026-09-29T23:50:53",
     "track_id": 1,
     "face_status": "insufficient_face_data",
     "label": "insufficient_face_data",
@@ -29,7 +29,7 @@
   {
     "camera_id": "cam2",
     "zone": "Zone Alpha",
-    "timestamp": "2026-09-27T10:13:33",
+    "timestamp": "2026-09-29T23:50:57",
     "track_id": 1,
     "face_status": "insufficient_face_data",
     "label": "insufficient_face_data",
@@ -38,7 +38,7 @@
   {
     "camera_id": "cam2",
     "zone": "Zone Alpha",
-    "timestamp": "2026-09-27T10:13:35",
+    "timestamp": "2026-09-29T23:50:58",
     "track_id": 1,
     "face_status": "insufficient_face_data",
     "label": "insufficient_face_data",
@@ -47,7 +47,7 @@
   {
     "camera_id": "cam2",
     "zone": "Zone Alpha",
-    "timestamp": "2026-09-27T10:13:39",
+    "timestamp": "2026-09-29T23:51:02",
     "track_id": 1,
     "face_status": "insufficient_face_data",
     "label": "insufficient_face_data",
@@ -56,7 +56,7 @@
   {
     "camera_id": "cam2",
     "zone": "Zone Alpha",
-    "timestamp": "2026-09-27T10:13:47",
+    "timestamp": "2026-09-29T23:51:11",
     "track_id": 1,
     "face_status": "insufficient_face_data",
     "label": "insufficient_face_data",

@@ -4,7 +4,7 @@
     "status": "stream_ended",
     "fps": 0.0,
     "blank_frame": false,
-    "last_update": 1790484265.3754873,
+    "last_update": 1790706111.6393688,
     "location_name": "North Fence Line",
     "zone": "Zone Alpha"
   },
@@ -13,7 +13,7 @@
     "status": "stream_ended",
     "fps": 0.0,
     "blank_frame": false,
-    "last_update": 1790484265.3963566,
+    "last_update": 1790706111.659633,
     "location_name": "Access Road",
     "zone": "Zone Alpha"
   },
@@ -22,7 +22,7 @@
     "status": "stream_ended",
     "fps": 0.0,
     "blank_frame": false,
-    "last_update": 1790484265.3777404,
+    "last_update": 1790706111.6358438,
     "location_name": "Perimeter East",
     "zone": "Zone Bravo"
   },
@@ -31,7 +31,7 @@
     "status": "stream_ended",
     "fps": 0.0,
     "blank_frame": false,
-    "last_update": 1790484265.3958552,
+    "last_update": 1790706111.688373,
     "location_name": "Gate 2",
     "zone": "Zone Bravo"
   }
