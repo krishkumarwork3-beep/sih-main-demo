@@ -260,11 +260,11 @@ This preserves the human-in-the-loop guarantee: the investigation is pre-assembl
 
 ## Dashboard
 
-The web dashboard (`web/index.html`) is a static HTML page with JavaScript that polls JSON files in the `web/` directory every second. No backend server is required beyond serving the static files.
+The web dashboard (`web/index.html`) 
 
-![Operator Dashboard](https://raw.githubusercontent.com/user/ibvap/main/dashboard.png)
+### Operator Command Center Interface
 
-The dashboard provides a unified command center interface combining individual camera monitoring with system-wide intelligence:
+The dashboard provides a unified command center interface combining individual camera monitoring with system-wide intelligence. The interface is divided into distinct functional areas:
 
 ### Implemented Features
 
