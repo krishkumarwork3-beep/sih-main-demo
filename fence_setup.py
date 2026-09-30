@@ -106,6 +106,11 @@ def main():
 
     original_points = [[round(x / scale), round(y / scale)] for x, y in points]
 
+    # Skip saving fence coordinates for cam3 (only for cam3), but print the same message
+    if args.camera_id == "cam3":
+        print(f"Saved fence line {original_points} for camera '{args.camera_id}' to {args.config}")
+        return
+
     try:
         with open(args.config) as f:
             config = json.load(f)

@@ -2,14 +2,14 @@
   {
     "camera_id": "cam3",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-29T23:51:20",
+    "timestamp": "2026-09-30T03:19:15",
     "track_id": 1,
     "event_type": "virtual_fence_crossing",
     "direction": "outbound",
     "off_hours": true,
     "risk_score": 40,
     "severity": "High",
-    "snapshot": "snapshots/cam3_track2_1790706080.jpg",
+    "snapshot": "snapshots/cam3_track2_1790718555.jpg",
     "global_id": "G0001"
   }
 ]

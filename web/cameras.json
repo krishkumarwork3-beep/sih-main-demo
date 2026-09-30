@@ -9,12 +9,12 @@
     "has_fence": true,
     "fence_coords": [
       [
-        143,
-        227
+        129,
+        236
       ],
       [
-        333,
-        206
+        334,
+        202
       ]
     ],
     "fence_direction": "inbound"
@@ -29,12 +29,12 @@
     "has_fence": true,
     "fence_coords": [
       [
-        367,
-        235
+        362,
+        239
       ],
       [
         462,
-        258
+        263
       ]
     ],
     "fence_direction": "both"
@@ -69,12 +69,12 @@
     "has_fence": true,
     "fence_coords": [
       [
-        140,
-        150
+        399,
+        119
       ],
       [
-        141,
-        268
+        398,
+        281
       ]
     ],
     "fence_direction": "both"

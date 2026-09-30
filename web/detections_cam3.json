@@ -2,7 +2,7 @@
   {
     "camera_id": "cam3",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-29T23:51:10",
+    "timestamp": "2026-09-30T03:19:03",
     "track_id": 1,
     "face_status": "insufficient_face_data",
     "label": "insufficient_face_data",
@@ -13,7 +13,7 @@
   {
     "camera_id": "cam3",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-29T23:51:14",
+    "timestamp": "2026-09-30T03:19:07",
     "track_id": 1,
     "face_status": "insufficient_face_data",
     "label": "insufficient_face_data",
@@ -24,7 +24,7 @@
   {
     "camera_id": "cam3",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-29T23:51:18",
+    "timestamp": "2026-09-30T03:19:12",
     "track_id": 1,
     "face_status": "insufficient_face_data",
     "label": "insufficient_face_data",
@@ -35,7 +35,7 @@
   {
     "camera_id": "cam3",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-29T23:51:21",
+    "timestamp": "2026-09-30T03:19:15",
     "track_id": 1,
     "face_status": "insufficient_face_data",
     "label": "insufficient_face_data",
@@ -46,7 +46,7 @@
   {
     "camera_id": "cam3",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-29T23:51:23",
+    "timestamp": "2026-09-30T03:19:16",
     "track_id": 1,
     "face_status": "insufficient_face_data",
     "label": "insufficient_face_data",
@@ -57,7 +57,7 @@
   {
     "camera_id": "cam3",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-29T23:51:25",
+    "timestamp": "2026-09-30T03:19:19",
     "track_id": 1,
     "face_status": "insufficient_face_data",
     "label": "insufficient_face_data",
@@ -68,7 +68,18 @@
   {
     "camera_id": "cam3",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-29T23:51:28",
+    "timestamp": "2026-09-30T03:19:24",
+    "track_id": 1,
+    "face_status": "insufficient_face_data",
+    "label": "insufficient_face_data",
+    "global_id": "G0001",
+    "type": "person",
+    "detail": "person #1"
+  },
+  {
+    "camera_id": "cam3",
+    "zone": "Zone Bravo",
+    "timestamp": "2026-09-30T03:19:26",
     "track_id": 1,
     "face_status": "insufficient_face_data",
     "label": "insufficient_face_data",
@@ -79,7 +90,7 @@
   {
     "camera_id": "cam3",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-29T23:51:29",
+    "timestamp": "2026-09-30T03:19:28",
     "track_id": 1,
     "face_status": "insufficient_face_data",
     "label": "insufficient_face_data",

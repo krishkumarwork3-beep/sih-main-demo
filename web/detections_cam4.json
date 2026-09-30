@@ -2,7 +2,7 @@
   {
     "camera_id": "cam4",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-29T23:50:27",
+    "timestamp": "2026-09-30T03:18:19",
     "track_id": 1,
     "type": "vehicle",
     "detail": "vehicle #1"
@@ -10,7 +10,7 @@
   {
     "camera_id": "cam4",
     "zone": "Zone Bravo",
-    "timestamp": "2026-09-29T23:50:30",
+    "timestamp": "2026-09-30T03:18:22",
     "track_id": 2,
     "type": "vehicle",
     "detail": "vehicle #2"

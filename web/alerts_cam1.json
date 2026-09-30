@@ -2,14 +2,14 @@
   {
     "camera_id": "cam1",
     "zone": "Zone Alpha",
-    "timestamp": "2026-09-29T23:50:37",
+    "timestamp": "2026-09-30T03:18:30",
     "track_id": 1,
     "event_type": "virtual_fence_crossing",
     "direction": "inbound",
     "off_hours": true,
     "risk_score": 40,
     "severity": "High",
-    "snapshot": "snapshots/cam1_track1_1790706037.jpg",
+    "snapshot": "snapshots/cam1_track1_1790718510.jpg",
     "global_id": "G0001"
   }
 ]
