@@ -312,7 +312,7 @@ Footage that was never flagged or was overridden as a confirmed false positive i
 ## Tech Stack
 
 - **Detection & Tracking**: YOLOv8 (Ultralytics), ByteTrack
-- **Face Recognition**: InsightFace (SCRFD + ArcFace), onnxruntime-gpu
+- **Face Recognition**: InsightFace (SCRFD + ArcFace),FAISS, onnxruntime-gpu
 - **Person Re-ID**: OSNet x1.0 (torchreid)
 - **OCR**: EasyOCR
 - **Pose Estimation**: MediaPipe Pose, MediaPipe Face Mesh
@@ -475,10 +475,10 @@ Console output shows:
 Prefetching face (buffalo_l) and Re-ID (OSNet) weights if needed...
 OSNet x1.0 Re-ID embedder loaded on cuda:0 (41 tensors, 512-d).
 InsightFace buffalo_l face engine loaded on cuda:0.
-[cam1] opened video.mp4: ~29.0s at 25.0 fps (725 frames).
-[cam2] opened video2.mp4: ~29.0s at 25.0 fps (725 frames).
-[cam3] opened video3.mp4: ~29.0s at 25.0 fps (725 frames).
-[cam4] opened video4.mp4: ~29.0s at 25.0 fps (725 frames).
+[cam1] opened video.mp4: ~26.0s at 25.0 fps (725 frames).
+[cam2] opened video2.mp4: ~26.0s at 25.0 fps (725 frames).
+[cam3] opened video3.mp4: ~26.0s at 25.0 fps (725 frames).
+[cam4] opened video4.mp4: ~26.0s at 25.0 fps (725 frames).
 IBVAP multi-camera demo running — 4 camera(s). Open web/index.html (serve the web/ folder).
 Looping enabled (--loop) — cameras restart their clip on end. Press Ctrl+C to stop.
 ```
@@ -494,45 +494,21 @@ Dashboard shows:
 
 The provided clips are intentionally challenging:
 
-- `video.mp4`, `video2.mp4`, `video3.mp4`: Same person crossing cam1 → cam2 → cam3. Low-res night/IR footage, subject wears a hoodie with the hood up, crouched posture, face not visible. Expected outcome: face status shows "no_usable_face" (correct, not a failure), global Re-ID correctly links as one identity across all three cameras.
-- `video4.mp4`: Parked vehicle at night, different location. No person present. Expected outcome: no person detections or false-positive person detections depending on YOLO's behavior on vehicle shapes at night, correctly never merged into the cam1-2-3 identity.
+- `video.mp4`, `video2.mp4`, `video3.mp4`, `video4.mp4`: Same person crossing cam1 → cam2 → cam3. Low-res night/IR footage, subject wears a hoodie with the hood up, crouched posture, face not visible. Expected outcome: face status shows "no_usable_face" (correct, not a failure), global Re-ID correctly links as one identity across all three cameras.
+- `video4.mp4`: Parked vehicle at night, different location.
 
 A positive face recognition match requires adding enrollment photos to `known_faces/` and footage where a face is clearly visible. The demo clips are designed to test the "no face visible" path, which is common in real border surveillance scenarios.
 
-## Limitations and Roadmap
-
-### Current Scope
-
-This demo implements Phases 1-4 of the 62-step implementation plan:
-
-- Foundation and architecture (Steps 1-6)
-- Core detection and tracking (Steps 7-13)
-- Trajectory and group behavior analysis (Steps 14-17)
-- Cross-camera identity tracking and Re-ID (Steps 18-24)
-
-### Not Yet Implemented
-
-The following are part of the platform design but not in the current demo codebase:
-
-- **Policy engine** (Steps 25-32): Centralized zone configuration, authorized personnel database, risk/intent scoring formula. The dashboard shows placeholder "unauthorized" status for all identities.
-- **Blockchain integration** (Steps 33-38): SHA-256 hashing, Hyperledger Fabric commits, edge write-ahead queue with two-tier eviction. Evidence files are stored on local filesystem in demo.
-- **Command dashboard backend** (Steps 39-44): REST/WebSocket API, operator override loop, policy management UI. Current dashboard is static HTML polling files.
-- **Real hardware integration** (Steps 45-51): RTSP stream ingestion, ONVIF discovery, edge device deployment, TLS/VPN transport security. Demo uses local video files.
-- **Generative AI** (Step 52): LLM-generated incident narratives and shift briefings with prompt/semantic caching.
-- **Agentic AI** (Step 53): Autonomous read-only investigation assistant with fixed tool registry.
-- **IPFS storage** (Step 54): Private swarm evidence storage, content-addressed deduplication.
-- **Infrastructure optimizations** (Steps 55-62): Merkle-batch blockchain anchoring, neural video compression, pgvectorscale consolidation, motion-gated inference, quantized edge models, cascade LLM routing, retention policy, autonomous cost-governor agent.
-
-### Known Issues
+## Limitations 
 
 - Camera adjacency graph uses a simplified time-window model. Production deployment requires surveyed, terrain-grounded adjacency edges.
 - Thermal camera support (Step 50) requires fine-tuning on elevated, static thermal footage after initial FLIR ADAS tuning.
 - Posture and micro-behavior signals (Step 12) are partially implemented. MediaPipe Pose integration and bounding-box width/height ratio tracking are placeholders.
 - Group spacing analysis (Step 17) discrete group entity tracking is not implemented. Behavioral spacing-variance signal is a placeholder.
 
-### Roadmap
+### Plan
 
-1. Complete Phases 5-6 (policy engine, context reasoning, full risk scoring)
+1. Complete policy engine, context reasoning, full risk scoring
 2. Implement blockchain evidence layer with Hyperledger Fabric
 3. Build command dashboard backend (REST/WebSocket API)
 4. Integrate with real RTSP camera streams
@@ -544,10 +520,4 @@ The following are part of the platform design but not in the current demo codeba
 10. Pilot deployment at a single BOP with real surveyed adjacency graph
 11. Scale to multi-BOP deployment with central coordination
 
----
-
-**Team**: Smart India Hackathon 2024 Submission
-
-**Developed for**: Sashastra Seema Bal (SSB)
-
-**License**: Proprietary (deployment restricted to SSB infrastructure per data localization requirements)
+-
