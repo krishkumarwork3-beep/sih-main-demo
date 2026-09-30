@@ -1,6 +1,6 @@
 # IBVAP: Intelligent Border Video Analytics Platform
 
-A multi-camera video surveillance system for the Sashastra Seema Bal (SSB) that combines real-time detection, cross-camera identity tracking, and policy-based authorization verification. Built for Smart India Hackathon 2024.
+A multi-camera video surveillance system for the Sashastra Seema Bal (SSB) that combines real-time detection, cross-camera identity tracking, and policy-based authorization verification. Built for Smart India Hackathon 2026.
 
 ## Problem Statement
 
@@ -262,30 +262,64 @@ This preserves the human-in-the-loop guarantee: the investigation is pre-assembl
 
 The web dashboard (`web/index.html`) is a static HTML page with JavaScript that polls JSON files in the `web/` directory every second. No backend server is required beyond serving the static files.
 
+![Operator Dashboard](https://raw.githubusercontent.com/user/ibvap/main/dashboard.png)
+
+The dashboard provides a unified command center interface combining individual camera monitoring with system-wide intelligence:
+
+### Implemented Features
+
+**Live Edge Feeds** ✓
+- Four camera panels displaying real-time video feeds
+- Each panel shows its own camera's detection overlay
+- Latest frame updated continuously from `web/latest_frame_camX.jpg`
+- Active track visualization with bounding boxes
+
+**Cross-Camera Re-ID Timeline** ✓
+- Spatial handoff visualization showing movement across cameras
+- Breadcrumb trail: `CAM1 → CAM2 → CAM3`
+- Global identity tracking (G0001, G0002, etc.)
+- Movement history with timestamps per camera transition
+
+**Perimeter Alerts Feed** ✓
+- Virtual fence crossing alerts with severity indicators
+- Direction tracking (inbound/outbound/both)
+- Time-stamped event log per camera
+- Risk level color coding (normal/tripped/high)
+
+**Vehicle Recognition Log** ✓
+- Detected vehicles displayed per camera feed
+- Track ID and timestamp for each detection
+- ANPR integration (license plate recognition via EasyOCR)
+
 ### Per-Camera Panels
 
 Each camera has its own panel showing:
 
 - Live feed (latest frame, updated continuously)
-- Virtual fence status: last crossing event (if any), direction, timestamp, severity
-- Face detections: name / "unknown" / "no_usable_face", track ID, timestamp
+- Virtual fence status: configured direction (both/inbound), last crossing event (if any), timestamp, severity (NORMAL/TRIPPED)
+- Face detections: InsightFace status showing face count logged, with "Scanning for faces..." message or detected face labels
 - Active track count and current FPS
 
 These panels are independent: cam1's panel shows only cam1's fence crossings and face detections, not merged data from other cameras.
 
 ### Cross-Camera Detection Section
 
-A separate, visually distinct section labeled "Cross-Camera Re-Identification & Movement Tracking" covers all cameras together:
+A separate, visually distinct section labeled "Global Cross-Camera Re-Identification & Movement Tracking" covers all cameras together:
 
-- Global identities table: Global ID, authorization status, face identity (if recognized), cameras visited, last seen time
-- Active cross-camera transit timeline: breadcrumb view showing `cam1 → cam2 → cam3` movement paths
-- Disambiguation queue: ambiguous Re-ID matches awaiting operator confirmation
+- Global identities database: Global ID, class (person/vehicle), authorization status (unauthorized by default), face identity (if recognized), cameras visited, last seen time
+- Active cross-camera transit timeline: spatial handoff breadcrumb showing sequential ingress/egress patterns (e.g., `G0001: CAM1 North Fence Line 03:17:08 → CAM2 Access Road 03:17:23 → CAM3 Perimeter East 03:17:38`)
+- Disambiguation queue: ambiguous Re-ID matches awaiting operator confirmation (displayed when top-2 similarity margin is below threshold)
 
-If a global identity has a recognized face label, that name is displayed alongside the global ID in this section.
+If a global identity has a recognized face label from the `known_faces/` enrollment gallery, that name is displayed alongside the global ID in this section.
 
 ### Camera Health Strip
 
-A horizontal strip at the top shows health status for all cameras: healthy (green), degraded (yellow), offline (red), or stream_ended (blue). Clicking a camera in the health strip jumps to that camera's panel.
+A horizontal strip at the top shows health status for all cameras:
+
+- Stream count: `4/4 STREAMS` (all cameras active)
+- Per-camera health: CAM1 (healthy), CAM2 (healthy), CAM3 (healthy), CAM4 (healthy)
+- FPS indicator per camera
+- Status indicators: healthy (green), degraded (yellow), offline (red), stream_ended (blue)
 
 ### System Logs Panel
 
@@ -519,5 +553,3 @@ A positive face recognition match requires adding enrollment photos to `known_fa
 9. Apply Phase 11 cost optimizations (motion-gating, quantization, cascade routing)
 10. Pilot deployment at a single BOP with real surveyed adjacency graph
 11. Scale to multi-BOP deployment with central coordination
-
--
